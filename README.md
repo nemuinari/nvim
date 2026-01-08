@@ -22,7 +22,8 @@
 	- Aggregates plugin specs for `lazy.nvim`.
 - LSP/format: `lua/plugins/mason.lua`
 	- LSP servers initialized on `BufReadPre`.
-	- Integrates language tweaks (e.g., inlay hints, formatting).
+	- Integrates language tweaks (formatting).
+	- Inlay hints: shown in Normal mode, hidden in Insert mode; toggle auto behavior per buffer with `<leader>ih`.
 
 ## Performance
 
@@ -33,9 +34,10 @@
 	- Note: `netrwPlugin` is enabled, so `:Lex` (netrw Lexplore) works.
 - Autocmd consolidation: single `FileType` handler with patterns reduces overhead.
 - Plugin lazy loading:
-	- `nvim-cmp` loads on `InsertEnter`.
 	- LSP (`nvim-lspconfig`) loads on `BufReadPre`.
 	- Telescope keymaps declared in `keys` to load on demand.
+	- Copilot provides inline suggestions; `nvim-cmp` is not used.
+	- ToggleTerm loads on key press (`<C-t>`, `<leader>cc`/`<leader>cx`).
 - Platform memoization: clipboard/shell detection cached in `platform.lua`.
 
 ## Telescope
@@ -87,7 +89,8 @@ sed -n '1,120p' /tmp/nvim-startup.txt
 	- lazy 用のプラグイン一覧。
 - LSP/フォーマット: `lua/plugins/mason.lua`
 	- LSP は `BufReadPre` で初期化。
-	- インレイヒントやフォーマット連携などの設定を含む。
+	- フォーマット連携などの設定を含む。
+	- インレイヒント: ノーマルモードで表示、挿入モードで非表示。バッファ単位で `<leader>ih` で自動制御 ON/OFF を切替可能。
 
 ### パフォーマンス
 
@@ -98,6 +101,9 @@ sed -n '1,120p' /tmp/nvim-startup.txt
 	- 備考: `netrwPlugin` は有効（`:Lex` が動作）。
 - autocmd の集約とプラグイン遅延ロードで起動時間を短縮。
 - `platform.lua` による検出結果のキャッシュで再計算を削減。
+
+ - Copilot はインライン提案を利用し、`nvim-cmp` は使用していません。
+ - ToggleTerm はキー押下でロード（`<C-t>` や `<leader>cc`/`<leader>cx`）。
 
 ### Telescope
 
@@ -147,9 +153,11 @@ sed -n '1,120p' /tmp/nvim-startup.txt
 	- `K`: Hover
 	- `<space>f`: Format (async)
 	- `<space>rn`: Rename symbol
+	- `<leader>ih`: Toggle inlay hints auto behavior (Normal=on, Insert=off)
 - Copilot CLI:
 	- `<leader>cc`: Toggle Copilot CLI tab
 	- `<leader>cx`: Close Copilot CLI session
+	- Note: If standalone `copilot` is available, it runs directly; otherwise falls back to `gh copilot` extension.
 - Netrw:
 	- `:Lex` / `:Lexplore`: File explorer
 
@@ -179,8 +187,13 @@ sed -n '1,120p' /tmp/nvim-startup.txt
 	- `K`: ホバー
 	- `<space>f`: フォーマット（非同期）
 	- `<space>rn`: リネーム
+	- `<leader>ih`: インレイヒントの自動制御トグル（ノーマル=表示、挿入=非表示）
 - Copilot CLI:
 	- `<leader>cc`: Copilot CLI をタブ表示/非表示
 	- `<leader>cx`: Copilot CLI セッションを終了
+	- 備考: スタンドアロンの `copilot` があればそれを起動、無ければ `gh copilot` 拡張へフォールバックします。
 - Netrw:
 	- `:Lex` / `:Lexplore`: ファイルブラウザ
+
+ - 終了:
+ 	- `:q`: 通常終了。失敗時は自動で `:quit!` にフォールバックするラッパーを用意。

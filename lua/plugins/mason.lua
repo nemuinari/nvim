@@ -44,10 +44,9 @@ return {
 	{ "williamboman/mason-lspconfig.nvim" },
 	{
 		"neovim/nvim-lspconfig",
-		dependencies = { "hrsh7th/cmp-nvim-lsp" },
 		event = "BufReadPre",
 		config = function()
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+			local capabilities = {}
 
 			local ok_masonlsp, mason_lspconfig = pcall(require, "mason-lspconfig")
 			if ok_masonlsp then

@@ -14,6 +14,13 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Enable the Lua module loader cache for faster startup (Neovim 0.9+)
+pcall(function()
+  if vim.loader and vim.loader.enable then
+    vim.loader.enable()
+  end
+end)
+
 -- Initialize lazy first for faster startup and plugin lazy-loading
 require("config.lazy")
 

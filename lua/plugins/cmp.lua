@@ -9,6 +9,7 @@ return {
 	config = function()
 		local cmp = require("cmp")
 		cmp.setup({
+			enabled = false, -- cmpを無効化
 			window = {
 				documentation = cmp.config.disable,
 			},

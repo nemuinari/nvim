@@ -95,8 +95,7 @@ return {
       { "<leader>cx", _kill_cli,       desc = "Copilot CLI (close session)" },
     },
     config = function()
-      -- Disable inline suggestions if CLI is the primary workflow
-      vim.g.copilot_enabled = 0
+      vim.g.copilot_enabled = 1
     end,
   },
 }

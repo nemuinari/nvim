@@ -5,6 +5,7 @@ return {
 		"hrsh7th/cmp-nvim-lsp",
 		"hrsh7th/cmp-buffer",
 		"hrsh7th/cmp-path",
+		"zbirenbaum/copilot-cmp",
 	},
 	config = function()
 		local cmp = require("cmp")
@@ -18,11 +19,12 @@ return {
 				["<C-Space>"] = cmp.mapping.complete(),
 				["<CR>"] = cmp.mapping.confirm({ select = true }),
 			}),
-			sources = {
+			sources = cmp.config.sources({
+				{ name = "copilot", priority = 100 },
 				{ name = "nvim_lsp" },
 				{ name = "buffer" },
 				{ name = "path" },
-			},
+			}),
 		})
 	end,
 }

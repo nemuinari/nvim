@@ -34,7 +34,7 @@ PointerAlignment: Left
 DerivePointerAlignment: false
 
 # Braces
-BreakBeforeBraces: Allman
+BreakBeforeBraces: Attach
 BraceWrapping:
   SplitEmptyFunction: true
   SplitEmptyRecord: true

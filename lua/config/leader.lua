@@ -2,5 +2,6 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- Netrw settings (must be set before bootstrap)
-vim.g.netrw_banner = 0  -- バナーを非表示
+-- Netrwを無効化（oil.nvimを使用）
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1

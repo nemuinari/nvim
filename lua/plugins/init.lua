@@ -5,4 +5,5 @@ return {
   require("plugins.terminal"),
   require("plugins.treesitter"),
   require("plugins.mason"),
+  require("plugins.oil"),
 }

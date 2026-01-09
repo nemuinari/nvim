@@ -31,6 +31,7 @@ vim.opt.mouse = "a"
 vim.opt.undofile = true
 vim.opt.updatetime = 250
 vim.opt.swapfile = false
+vim.opt.hidden = true  -- 未保存バッファを隠すことを許可
 
 local platform = require("config.platform")
 

@@ -1,6 +1,6 @@
 -- Constants
 local COPILOT_PATTERNS = { "github/gh%-copilot", "githubnext/gh%-copilot", "copilot" }
-local COPILOT_WELCOME_MSG = "echo 'Copilot CLI (gh extension) ready. Try: gh copilot suggest \"Install git\"'\n"
+local COPILOT_WELCOME_MSG = "gh copilot --banner\n"
 local TOGGLETERM_PATTERN = "term://*#toggleterm#*"
 
 -- State
@@ -45,7 +45,7 @@ local function create_copilot_terminal()
 	local use_standalone = vim.fn.executable("copilot") == 1
 
 	local config = {
-		cmd = use_standalone and "copilot" or vim.o.shell,
+		cmd = use_standalone and "copilot --banner" or "gh copilot --banner",
 		direction = "float",
 		close_on_exit = false,
 		hidden = true,
@@ -60,9 +60,6 @@ local function create_copilot_terminal()
 			setup_terminal_window()
 			-- フローティングウィンドウを最大化
 			vim.cmd("startinsert!")
-			if not use_standalone then
-				term:send(COPILOT_WELCOME_MSG)
-			end
 		end,
 	}
 

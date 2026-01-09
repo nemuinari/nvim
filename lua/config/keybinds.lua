@@ -31,6 +31,3 @@ vim.api.nvim_create_user_command('Q', function()
 		pcall(vim.cmd, 'quit!')
 	end
 end, {})
-
-vim.cmd('cnoreabbrev <expr> q getcmdtype() == ":" && getcmdline() == "q" ? "Q" : "q"')
-vim.cmd('cnoreabbrev <expr> wq getcmdtype() == ":" && getcmdline() == "wq" ? "w<bar>Q" : "wq"')

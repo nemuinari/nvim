@@ -86,6 +86,8 @@ return {
 				callback = function(ev)
 					setup_keymaps(ev.buf)
 					enable_inlay_hints(ev.buf)
+					-- Disable comment auto-insertion
+					vim.opt_local.formatoptions = vim.opt_local.formatoptions - "o" - "r"
 					-- Buffer-local toggle for auto inlay hints
 					vim.keymap.set("n", "<leader>ih", function()
 						if vim.b.inlay_hints_auto then

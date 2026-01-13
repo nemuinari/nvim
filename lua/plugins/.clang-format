@@ -23,6 +23,9 @@ AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 AllowShortBlocksOnASingleLine: false
 
+# Template declarations
+AlwaysBreakTemplateDeclarations: Yes
+
 # Constructors
 PackConstructorInitializers: BinPack
 BreakConstructorInitializers: BeforeColon

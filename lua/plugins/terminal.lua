@@ -130,23 +130,8 @@ return {
 	keys = {
 		{ "<leader>cc", open_copilot, desc = "Copilot CLI を開く" },
 		{ "<leader>cx", close_copilot, desc = "Copilot CLI を閉じる" },
-		{
-			"<C-t>",
-			function()
-				vim.cmd("ToggleTerm direction=horizontal")
-			end,
-			mode = { "n", "t" },
-			desc = "Toggle terminal",
-		},
 	},
 	config = function()
-		require("toggleterm").setup({
-			shell = vim.o.shell,
-			size = 6,
-			open_mapping = "<C-t>",
-			direction = "horizontal",
-		})
-
 		setup_terminal_keymaps()
 		setup_terminal_autocmds()
 	end,

@@ -127,10 +127,10 @@ end
 return {
 	"akinsho/toggleterm.nvim",
 	version = "*",
-	keys = {
-		{ "<leader>cc", open_copilot, desc = "Copilot CLI を開く" },
-		{ "<leader>cx", close_copilot, desc = "Copilot CLI を閉じる" },
-	},
+	       keys = {
+		       { "<leader>cc", open_copilot, mode = "n", desc = "Copilot CLI を開く" },
+		       { "<leader>cx", close_copilot, mode = "n", desc = "Copilot CLI を閉じる" },
+	       },
 	config = function()
 		setup_terminal_keymaps()
 		setup_terminal_autocmds()

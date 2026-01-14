@@ -1,7 +1,6 @@
--- 実処理はbootstrap.luaに委譲
+require('config.leader')
 require('config.bootstrap')
 
--- VimEnterイベントで遅延初期化（pcallで安全にロード）
 vim.api.nvim_create_autocmd('VimEnter', {
 	callback = function()
 		local modules = {

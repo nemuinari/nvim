@@ -11,7 +11,6 @@ local function copy_path(fmt)
 	if abs == "" then return end
 	local path = fmt == "rel" and vim.fn.fnamemodify(abs, ":.") or fmt == "win" and abs:gsub("/", "\\") or abs
 	vim.fn.setreg('+', path)
-	vim.fn.setreg('*', path)
 	vim.notify("Copied: " .. path)
 end
 

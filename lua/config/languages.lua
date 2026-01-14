@@ -19,6 +19,19 @@ function M.setup()
     end,
   })
 
+  -- LSP対応バッファで保存時に自動フォーマット
+  local g_lsp = vim.api.nvim_create_augroup("LspFormatOnSave", { clear = true })
+  vim.api.nvim_create_autocmd("BufWritePre", {
+    group = g_lsp,
+    callback = function()
+      if vim.lsp.buf.server_ready and vim.lsp.buf.server_ready() then
+        pcall(function()
+          vim.lsp.buf.format({ async = false })
+        end)
+      end
+    end,
+  })
+
   local g2 = vim.api.nvim_create_augroup("ClangFormatOnSave", { clear = true })
   vim.api.nvim_create_autocmd("BufWritePre", {
     group = g2,
@@ -28,11 +41,12 @@ function M.setup()
       if vim.fn.executable(bin) ~= 1 then return end
       local name = vim.api.nvim_buf_get_name(ev.buf)
       if name == "" then return end
-      local style = FALLBACK
+      local style = "file"
+      local assume_filename = FALLBACK
       if ok and platform and type(platform.clang_style) == "function" then
-        style = platform.clang_style(FALLBACK)
+        style = platform.clang_style("file")
       end
-      local out = vim.fn.systemlist({ bin, "--style=" .. style, "--assume-filename=" .. name }, vim.api.nvim_buf_get_lines(ev.buf, 0, -1, false))
+      local out = vim.fn.systemlist({ bin, "--style=" .. style, "--assume-filename=" .. assume_filename }, vim.api.nvim_buf_get_lines(ev.buf, 0, -1, false))
       if vim.v.shell_error ~= 0 then return end
       local view = vim.fn.winsaveview()
       vim.api.nvim_buf_set_lines(ev.buf, 0, -1, false, out)

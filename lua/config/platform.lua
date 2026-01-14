@@ -1,73 +1,82 @@
+-- C++/C用clang-formatスタイル判定
+function M.clang_style(fallback)
+	local platform = M.get_platform()
+	if platform.is_windows or platform.is_wsl then
+		return fallback
+	end
+	return "file"
+end
+-- platform.lua: Windows/WSL判定とクリップボード最適化
 local M = {}
-local _cache = {}
-
-M.is_win = vim.loop.os_uname().sysname == "Windows_NT"
-M.is_wsl = vim.fn.has("wsl") == 1
+local cache = {}
 
 function M.has(cmd)
 	return vim.fn.executable(cmd) == 1
 end
 
+function M.get_platform()
+	if cache.platform then return cache.platform end
+	local platform = {
+		is_windows = vim.fn.has("win32") == 1,
+		is_wsl = vim.fn.has("wsl") == 1,
+	}
+	cache.platform = platform
+	return platform
+end
+
 function M.clipboard()
-	if _cache.clipboard ~= nil then return _cache.clipboard end
-	if M.is_wsl and M.has("win32yank.exe") then
-		return {
-			name = "win32yank",
+	if cache.clipboard ~= nil then return cache.clipboard end
+	local platform = M.get_platform()
+	if platform.is_wsl and M.has("win32yank.exe") then
+		cache.clipboard = {
+			name = "win32yank-wsl",
 			copy = { ["+"] = "win32yank.exe -i --crlf", ["*"] = "win32yank.exe -i --crlf" },
 			paste = { ["+"] = "win32yank.exe -o --lf", ["*"] = "win32yank.exe -o --lf" },
-			cache_enabled = 0,
+			cache_enabled = 1,
 		}
+		return cache.clipboard
 	end
 	if M.has("wl-copy") and M.has("wl-paste") then
-		_cache.clipboard = {
+		cache.clipboard = {
 			name = "wl-clipboard",
 			copy = { ["+"] = "wl-copy --foreground --type text/plain", ["*"] = "wl-copy --foreground --type text/plain" },
 			paste = { ["+"] = "wl-paste --no-newline", ["*"] = "wl-paste --no-newline" },
 			cache_enabled = 0,
 		}
-		return _cache.clipboard
+		return cache.clipboard
 	end
 	if M.has("xclip") then
-		_cache.clipboard = {
+		cache.clipboard = {
 			name = "xclip",
 			copy = { ["+"] = "xclip -selection clipboard", ["*"] = "xclip -selection primary" },
 			paste = { ["+"] = "xclip -selection clipboard -o", ["*"] = "xclip -selection primary -o" },
 			cache_enabled = 0,
 		}
-		return _cache.clipboard
+		return cache.clipboard
 	end
 	if M.has("xsel") then
-		_cache.clipboard = {
+		cache.clipboard = {
 			name = "xsel",
 			copy = { ["+"] = "xsel --clipboard --input", ["*"] = "xsel --primary --input" },
 			paste = { ["+"] = "xsel --clipboard --output", ["*"] = "xsel --primary --output" },
 			cache_enabled = 0,
 		}
-		return _cache.clipboard
+		return cache.clipboard
 	end
+	return nil
 end
 
 function M.shell()
-	if _cache.shell ~= nil then return _cache.shell end
-	if not M.is_win then return nil end
-	local ps = M.has("pwsh") and "pwsh" or "powershell"
-	_cache.shell = {
-		shell = ps,
-		shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;",
-		shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait",
-		shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; if($?) { cat %s } : { cat %s; exit 1 }",
-	}
-	return _cache.shell
-end
-
-function M.clang_style(fallback_path)
-	if not fallback_path or fallback_path == "" then
-		return "file"
+	local platform = M.get_platform()
+	if platform.is_windows then
+		return {
+			shell = "powershell",
+			shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command",
+			shellredir = ">",
+			shellpipe = "| Out-File -Encoding UTF8",
+		}
 	end
-	if not vim.loop.fs_stat(fallback_path) then
-		return "file"
-	end
-	return "file:" .. fallback_path:gsub("\\", "/")
+	return nil
 end
 
 return M

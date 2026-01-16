@@ -111,19 +111,18 @@ end
 
 -- メイン関数
 function M.setup()
-	setup_indent()
+  setup_indent()
 
-	local use_conform = vim.g.use_conform
-	if use_conform == nil then
-		use_conform = true
-	end
+  local use_conform = vim.g.use_conform
+  if use_conform == nil then
+    use_conform = true
+  end
 
-	if not use_conform then
-		setup_lsp_format()
-		setup_clang_format()
-		setup_rust_format()
-	end
+  if not use_conform then
+    setup_lsp_format()
+    setup_clang_format()
+    setup_rust_format()
+  end
 end
 
 return M
-

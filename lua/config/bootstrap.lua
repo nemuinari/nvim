@@ -1,6 +1,3 @@
--- ========================================
--- Bootstrap lazy.nvim
--- ========================================
 local function bootstrap_lazy()
 	local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
@@ -35,32 +32,36 @@ local function bootstrap_lazy()
 	return true
 end
 
--- ========================================
+
 -- Enable Lua module loader cache
--- ========================================
 local function enable_loader_cache()
 	if vim.loader and vim.loader.enable then
 		vim.loader.enable()
 	end
 end
 
--- ========================================
--- Load deferred configurations
--- ========================================
-local function load_deferred_config()
-	local configs = { "config.options", "config.keybinds" }
+-- 設定モジュールをロード
+local function load_config_modules()
+	-- leader は即時実行型なので require のみ
+	local ok, err = pcall(require, "config.leader")
+	if not ok then
+		vim.notify("Error loading config.leader: " .. tostring(err), vim.log.levels.WARN)
+	end
 
-	for _, config in ipairs(configs) do
-		local ok, err = pcall(require, config)
-		if not ok then
-			vim.notify(string.format("Failed to load %s: %s", config, err), vim.log.levels.WARN)
+	-- setup を export する config は setup() を呼ぶ
+	for _, mod in ipairs({"config.options", "config.keybinds", "config.languages"}) do
+		local ok, m = pcall(require, mod)
+		if ok and m and type(m.setup) == "function" then
+			local ok2, err2 = pcall(m.setup)
+			if not ok2 then
+				vim.notify("Error in " .. mod .. ".setup(): " .. tostring(err2), vim.log.levels.WARN)
+			end
+		elseif not ok then
+			vim.notify("Error loading " .. mod .. ": " .. tostring(m), vim.log.levels.WARN)
 		end
 	end
 end
 
--- ========================================
--- Main initialization
--- ========================================
 local function init()
 	-- 1. Bootstrap lazy.nvim
 	if not bootstrap_lazy() then
@@ -73,12 +74,8 @@ local function init()
 	-- 3. Initialize lazy.nvim and load plugins
 	require("config.lazy")
 
-	-- 4. Defer heavy configurations to VimEnter
-	vim.api.nvim_create_autocmd("VimEnter", {
-		once = true,
-		callback = load_deferred_config,
-	})
+	-- 4. 設定モジュールをロード
+	load_config_modules()
 end
 
--- Run initialization
 init()

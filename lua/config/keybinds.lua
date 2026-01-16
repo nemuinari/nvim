@@ -99,10 +99,10 @@ end
 -- ========================================
 -- Main Setup
 -- ========================================
-local function setup()
-	setup_terminal_keymaps()
-	setup_path_copy_keymaps()
-	setup_quit_command()
+local M = {}
+function M.setup()
+  setup_terminal_keymaps()
+  setup_path_copy_keymaps()
+  setup_quit_command()
 end
-
-setup()
+return M

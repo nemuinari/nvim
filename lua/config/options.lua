@@ -140,7 +140,8 @@ end
 -- ========================================
 -- Main Setup
 -- ========================================
-local function setup()
+local M = {}
+function M.setup()
 	setup_platform()
 	setup_display()
 	setup_indentation()
@@ -149,5 +150,4 @@ local function setup()
 	setup_editor()
 	setup_diagnostics()
 end
-
-setup()
+return M

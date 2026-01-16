@@ -9,12 +9,21 @@ return {
 				highlight = { enable = true },
 				indent = { enable = true },
 				ensure_installed = {
-					"lua", "json", "markdown", "markdown_inline", "yaml", "bash", "html", "css",
-					"c", "cpp", "python", "rust",
+					"lua",
+					"json",
+					"markdown",
+					"markdown_inline",
+					"yaml",
+					"bash",
+					"html",
+					"css",
+					"c",
+					"cpp",
+					"python",
+					"rust",
 				},
 				auto_install = false,
 			})
 		end
 	end,
 }
-

@@ -90,31 +90,51 @@ end
 -- Diagnostic Configuration
 -- ========================================
 local function setup_diagnostics()
-	vim.diagnostic.config({
-		-- エラーのみサインカラムに表示（警告・情報・ヒントは非表示）
-		signs = {
-			text = {
-				[vim.diagnostic.severity.ERROR] = "E",
-				[vim.diagnostic.severity.WARN] = "W", -- 警告は非表示
-				[vim.diagnostic.severity.INFO] = "I", -- 情報は非表示
-				[vim.diagnostic.severity.HINT] = "H", -- ヒントは非表示
-			},
+	local signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = "E",
+			[vim.diagnostic.severity.WARN] = "W",
+			[vim.diagnostic.severity.INFO] = "I",
+			[vim.diagnostic.severity.HINT] = "H",
 		},
-		-- 仮想テキストで警告を表示（サインカラムではなく行末に表示）
-		virtual_text = {
-			severity = {
-				min = vim.diagnostic.severity.WARN, -- 警告以上を表示
-			},
-			prefix = "●",
-		},
-		-- フロートウィンドウですべて表示
-		float = {
-			source = "always",
-			border = "rounded",
-		},
-		-- 更新頻度
+	}
+
+	pcall(function()
+		vim.api.nvim_set_hl(0, "DiagnosticSignError", { fg = "#FF5555" })
+		vim.api.nvim_set_hl(0, "DiagnosticSignWarn", { fg = "#FFB86C" })
+		vim.api.nvim_set_hl(0, "DiagnosticSignInfo", { fg = "#8BE9FD" })
+		vim.api.nvim_set_hl(0, "DiagnosticSignHint", { fg = "#50FA7B" })
+	end)
+
+	-- 共通ベース設定
+	local base = {
+		signs = true,
+		float = { source = "always", border = "rounded" },
 		update_in_insert = false,
+	}
+	local severity_min = { min = vim.diagnostic.severity.WARN }
+
+	local virtual_lines_cfg = vim.tbl_extend("force", base, {
+		virtual_text = false,
+		virtual_lines = {
+			only_current_line = false,
+			prefix = "● ",
+			severity = severity_min,
+		},
 	})
+
+	local ok = pcall(vim.diagnostic.config, virtual_lines_cfg)
+	if not ok then
+		local virtual_text_cfg = vim.tbl_extend("force", base, {
+			virtual_text = {
+				prefix = "●",
+				spacing = 2,
+				severity = severity_min,
+			},
+			virtual_text_win_col = math.max(80, vim.o.columns - 30),
+		})
+		vim.diagnostic.config(virtual_text_cfg)
+	end
 end
 
 -- ========================================

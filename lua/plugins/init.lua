@@ -6,4 +6,5 @@ return {
 	require("plugins.mason"),
 	require("plugins.oil"),
 	require("plugins.conform"),
+	require("plugins.lazydev"),
 }

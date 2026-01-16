@@ -28,7 +28,9 @@ local function setup_indent()
 			if not indent then
 				return
 			end
-
+			if not vim.opt_local.modifiable:get() then
+				vim.opt_local.modifiable = true
+			end
 			vim.opt_local.shiftwidth = indent
 			vim.opt_local.tabstop = indent
 		end,
@@ -111,18 +113,39 @@ end
 
 -- メイン関数
 function M.setup()
-  setup_indent()
+	setup_indent()
 
-  local use_conform = vim.g.use_conform
-  if use_conform == nil then
-    use_conform = true
-  end
+	local use_conform = vim.g.use_conform
+	if use_conform == nil then
+		use_conform = true
+	end
 
-  if not use_conform then
-    setup_lsp_format()
-    setup_clang_format()
-    setup_rust_format()
-  end
+	if not use_conform then
+		setup_lsp_format()
+		setup_clang_format()
+		setup_rust_format()
+	end
 end
+
+-- Lua LSP diagnostics undefined global
+local function setup_lua_ls_globals()
+	local lspconfig = vim.lsp.config
+	if not lspconfig then
+		return
+	end
+	if lspconfig.lua_ls and lspconfig.lua_ls.setup then
+		lspconfig.lua_ls.setup({
+			settings = {
+				Lua = {
+					diagnostics = {
+						globals = { "vim" },
+					},
+				},
+			},
+		})
+	end
+end
+
+setup_lua_ls_globals()
 
 return M

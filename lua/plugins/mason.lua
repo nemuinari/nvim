@@ -18,9 +18,7 @@ local LSP_SERVERS = {
 	lua_ls = {
 		settings = {
 			Lua = {
-				diagnostics = {
-					globals = { "vim", "use", "require" },
-				},
+				diagnostics = {},
 				workspace = {
 					library = vim.api.nvim_get_runtime_file("", true),
 					checkThirdParty = false,
@@ -230,14 +228,17 @@ return {
 			end
 
 			-- Setup LSP servers
-			local ok_lsp, lspconfig = pcall(require, "lspconfig")
-			if not ok_lsp then
+
+			local lspconfig = vim.lsp.config
+			if not lspconfig then
 				return
 			end
 
 			for server_name, server_opts in pairs(LSP_SERVERS) do
 				server_opts.capabilities = capabilities
-				lspconfig[server_name].setup(server_opts)
+				if lspconfig[server_name] and lspconfig[server_name].setup then
+					lspconfig[server_name].setup(server_opts)
+				end
 			end
 
 			-- LSP attach autocmd

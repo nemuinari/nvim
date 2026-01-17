@@ -2,7 +2,8 @@ local M = {}
 
 -- 定数定義
 local INDENTS = {
-	-- c, cpp is clang-format setting 2 spaces
+	c = 4,
+	cpp = 4,	
 	rust = 4,
 	python = 4,
 	lua = 2,
@@ -60,23 +61,25 @@ local function apply_formatting(bufnr, formatted_lines)
 	vim.fn.winrestview(view)
 end
 
+-- Clang-Formatの設定
 local function setup_clang_format()
-	local ok, platform = pcall(require, "config.platform")
 	local group = vim.api.nvim_create_augroup("ClangFormatOnSave", { clear = true })
-
 	vim.api.nvim_create_autocmd("BufWritePre", {
 		group = group,
 		pattern = FILE_PATTERNS.clang,
 		callback = function(ev)
 			local bin = vim.g.clang_format_cmd or "clang-format"
 			local lines = vim.api.nvim_buf_get_lines(ev.buf, 0, -1, false)
-
-			local style = "file"
-			if ok and platform and type(platform.clang_style) == "function" then
-				style = platform.clang_style("file")
-			end
-
-			local formatted = format_with_external_tool(bin, { "--style=" .. style }, lines)
+			local filename = vim.api.nvim_buf_get_name(ev.buf)
+			local assume_filename = filename ~= "" and filename or "file.cpp"
+			local formatted = format_with_external_tool(
+				bin,
+				{
+					"--style=file",
+					"--assume-filename=" .. assume_filename
+				},
+				lines
+			)
 			apply_formatting(ev.buf, formatted)
 		end,
 	})
@@ -121,7 +124,6 @@ function M.setup()
 	end
 
 	if not use_conform then
-		setup_lsp_format()
 		setup_clang_format()
 		setup_rust_format()
 	end

@@ -1,0 +1,47 @@
+---
+# ベーススタイル
+BasedOnStyle: Google
+
+# 基本設定
+Language: Cpp
+Standard: c++20
+
+# インデント
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+# 関数の改行設定
+AllowShortFunctionsOnASingleLine: Empty
+AlwaysBreakAfterReturnType: None
+
+# テンプレート
+AlwaysBreakTemplateDeclarations: Yes
+
+# ブロックとブレース
+BreakBeforeBraces: Attach
+IndentCaseLabels: true
+IndentPPDirectives: AfterHash
+
+# 名前空間
+NamespaceIndentation: None
+CompactNamespaces: false
+
+# ポインタとリファレンス
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# その他の改行設定
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Empty
+
+# スペース
+SpaceAfterTemplateKeyword: true
+SpaceBeforeParens: ControlStatements
+SpacesInAngles: Never
+
+# include整理
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup

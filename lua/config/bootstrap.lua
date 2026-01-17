@@ -1,81 +1,129 @@
-local function bootstrap_lazy()
-	local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+-- ========================================
+-- Neovim Bootstrap Configuration
+-- ========================================
 
+-- ========================================
+-- Lazy.nvim Bootstrap
+-- ========================================
+
+--- Lazy.nvim をインストールまたは読み込む
+---@return boolean success
+local function bootstrap_lazy()
+	local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
+	
 	if (vim.uv or vim.loop).fs_stat(lazypath) then
 		vim.opt.rtp:prepend(lazypath)
 		return true
 	end
-
-	-- Clone lazy.nvim
-	local repo = "https://github.com/folke/lazy.nvim.git"
+	
+	local repo = 'https://github.com/folke/lazy.nvim.git'
 	local out = vim.fn.system({
-		"git",
-		"clone",
-		"--filter=blob:none",
-		"--branch=stable",
+		'git',
+		'clone',
+		'--filter=blob:none',
+		'--branch=stable',
 		repo,
 		lazypath,
 	})
-
-	-- Check for errors
+	
 	if vim.v.shell_error ~= 0 then
 		vim.api.nvim_echo({
-			{ "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-			{ out, "WarningMsg" },
-			{ "\nPress any key to exit..." },
+			{ 'Failed to clone lazy.nvim:\n', 'ErrorMsg' },
+			{ out, 'WarningMsg' },
+			{ '\nPress any key to exit...' },
 		}, true, {})
 		vim.fn.getchar()
 		os.exit(1)
 	end
-
+	
 	vim.opt.rtp:prepend(lazypath)
 	return true
 end
 
+-- ========================================
+-- Loader Cache
+-- ========================================
 
--- Enable Lua module loader cache
+--- Lua モジュールローダーのキャッシュを有効化
 local function enable_loader_cache()
 	if vim.loader and vim.loader.enable then
 		vim.loader.enable()
 	end
 end
 
--- 設定モジュールをロード
-local function load_config_modules()
-	-- leader は即時実行型なので require のみ
-	local ok, err = pcall(require, "config.leader")
-	if not ok then
-		vim.notify("Error loading config.leader: " .. tostring(err), vim.log.levels.WARN)
-	end
+-- ========================================
+-- Early Colorscheme Setup
+-- ========================================
 
-	-- setup を export する config は setup() を呼ぶ
-	for _, mod in ipairs({"config.options", "config.keybinds", "config.languages"}) do
-		local ok, m = pcall(require, mod)
-		if ok and m and type(m.setup) == "function" then
-			local ok2, err2 = pcall(m.setup)
+--- 早期カラースキーム設定（フラッシュ防止）
+local function set_early_colorscheme()
+	vim.opt.termguicolors = true
+	vim.opt.background = 'dark'
+	vim.api.nvim_set_hl(0, 'Normal', { bg = '#2e3440', fg = '#d8dee9' })
+	vim.api.nvim_set_hl(0, 'NormalFloat', { bg = '#2e3440', fg = '#d8dee9' })
+end
+
+-- ========================================
+-- Config Modules
+-- ========================================
+
+--- 設定モジュールをロード
+local function load_config_modules()
+	-- Leader キー設定を即時実行
+	local ok, err = pcall(require, 'config.leader')
+	if not ok then
+		vim.notify('Error loading config.leader: ' .. tostring(err), vim.log.levels.WARN)
+	end
+	
+	-- setup() を持つ設定モジュールを実行
+	local config_modules = {
+		'config.options',
+		'config.keybinds',
+		'config.languages',
+	}
+	
+	for _, mod in ipairs(config_modules) do
+		local ok, module = pcall(require, mod)
+		if ok and module and type(module.setup) == 'function' then
+			local ok2, err2 = pcall(module.setup)
 			if not ok2 then
-				vim.notify("Error in " .. mod .. ".setup(): " .. tostring(err2), vim.log.levels.WARN)
+				vim.notify(
+					'Error in ' .. mod .. '.setup(): ' .. tostring(err2),
+					vim.log.levels.WARN
+				)
 			end
 		elseif not ok then
-			vim.notify("Error loading " .. mod .. ": " .. tostring(m), vim.log.levels.WARN)
+			vim.notify('Error loading ' .. mod .. ': ' .. tostring(module), vim.log.levels.WARN)
 		end
 	end
 end
 
+-- ========================================
+-- Initialization
+-- ========================================
+
+--- Neovim を初期化
 local function init()
-	-- 1. Bootstrap lazy.nvim
+	-- 1. ローダーキャッシュを有効化（高速化）
+	pcall(enable_loader_cache)
+	
+	-- 2. 早期カラースキーム設定（フラッシュ防止）
+	pcall(set_early_colorscheme)
+	
+	-- 3. Lazy.nvim をブートストラップ
 	if not bootstrap_lazy() then
 		return
 	end
-
-	-- 2. Enable loader cache for faster startup
-	pcall(enable_loader_cache)
-
-	-- 3. Initialize lazy.nvim and load plugins
-	require("config.lazy")
-
-	-- 4. 設定モジュールをロード
+	
+	-- 4. Lazy.nvim を初期化してプラグインをロード
+	require('config.lazy')
+	
+	-- 5. 設定モジュールをロード
 	load_config_modules()
 end
+
+-- ========================================
+-- Execute
+-- ========================================
 
 init()

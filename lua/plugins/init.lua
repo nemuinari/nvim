@@ -7,4 +7,5 @@ return {
 	require("plugins.oil"),
 	require("plugins.conform"),
 	require("plugins.lazydev"),
+	require("plugins.dashboard"),
 }

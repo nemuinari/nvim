@@ -1,22 +1,25 @@
 -- ========================================
+-- Neovim Options Configuration
+-- ========================================
+
+-- ========================================
 -- Platform-specific Configuration
 -- ========================================
+
 local function setup_platform()
-	local ok, platform = pcall(require, "config.platform")
+	local ok, platform = pcall(require, 'config.platform')
 	if not ok or not platform then
 		return
 	end
 
-	-- Clipboard configuration
-	if type(platform.clipboard) == "function" then
+	if type(platform.clipboard) == 'function' then
 		local clip = platform.clipboard()
 		if clip then
 			vim.g.clipboard = clip
 		end
 	end
 
-	-- Shell configuration
-	if type(platform.shell) == "function" then
+	if type(platform.shell) == 'function' then
 		local shell = platform.shell()
 		if shell then
 			vim.opt.shell = shell.shell
@@ -30,18 +33,20 @@ end
 -- ========================================
 -- Display Settings
 -- ========================================
+
 local function setup_display()
 	vim.opt.number = true
 	vim.opt.relativenumber = true
 	vim.opt.cursorline = true
 	vim.opt.termguicolors = true
 	vim.opt.laststatus = 3
-	vim.opt.signcolumn = "yes"
+	vim.opt.signcolumn = 'yes'
 end
 
 -- ========================================
 -- Indentation Settings
 -- ========================================
+
 local function setup_indentation()
 	vim.opt.expandtab = true
 	vim.opt.shiftwidth = 4
@@ -53,94 +58,92 @@ end
 -- ========================================
 -- Search Settings
 -- ========================================
+
 local function setup_search()
 	vim.opt.ignorecase = true
 	vim.opt.smartcase = true
 	vim.opt.hlsearch = true
 
-	-- Clear search highlight with double Escape
-	vim.keymap.set("n", "<Esc><Esc>", ":nohlsearch<CR><Esc>", {
+	vim.keymap.set('n', '<Esc><Esc>', ':nohlsearch<CR><Esc>', {
 		silent = true,
-		desc = "Clear search highlight",
+		desc = 'Clear search highlight',
 	})
 end
 
 -- ========================================
 -- File Encoding & Format
 -- ========================================
+
 local function setup_encoding()
-	vim.opt.encoding = "utf-8"
-	vim.opt.fileencoding = "utf-8"
-	vim.opt.fileformats = "unix,dos"
+	vim.opt.fileencoding = 'utf-8'
+	vim.opt.fileformats = 'unix,dos'
 end
 
 -- ========================================
 -- Editor Behavior
 -- ========================================
+
 local function setup_editor()
-	vim.opt.mouse = "a"
+	vim.opt.mouse = 'a'
 	vim.opt.undofile = true
 	vim.opt.updatetime = 250
 	vim.opt.swapfile = false
 	vim.opt.hidden = true
-	vim.opt.clipboard = "unnamedplus"
+	vim.opt.clipboard = 'unnamedplus'
 end
 
 -- ========================================
 -- Diagnostic Configuration
 -- ========================================
-local function setup_diagnostics()
-	local signs = {
-		text = {
-			[vim.diagnostic.severity.ERROR] = "E",
-			[vim.diagnostic.severity.WARN] = "W",
-			[vim.diagnostic.severity.INFO] = "I",
-			[vim.diagnostic.severity.HINT] = "H",
-		},
-	}
 
+local function setup_diagnostics()
 	pcall(function()
-		vim.api.nvim_set_hl(0, "DiagnosticSignError", { fg = "#FF5555" })
-		vim.api.nvim_set_hl(0, "DiagnosticSignWarn", { fg = "#FFB86C" })
-		vim.api.nvim_set_hl(0, "DiagnosticSignInfo", { fg = "#8BE9FD" })
-		vim.api.nvim_set_hl(0, "DiagnosticSignHint", { fg = "#50FA7B" })
+		vim.api.nvim_set_hl(0, 'DiagnosticSignError', { fg = '#FF5555' })
+		vim.api.nvim_set_hl(0, 'DiagnosticSignWarn', { fg = '#FFB86C' })
+		vim.api.nvim_set_hl(0, 'DiagnosticSignInfo', { fg = '#8BE9FD' })
+		vim.api.nvim_set_hl(0, 'DiagnosticSignHint', { fg = '#50FA7B' })
 	end)
 
-	-- 共通ベース設定
-	local base = {
+	local base_config = {
 		signs = true,
-		float = { source = "always", border = "rounded" },
+		float = {
+			source = 'always',
+			border = 'rounded',
+		},
 		update_in_insert = false,
 	}
+
 	local severity_min = { min = vim.diagnostic.severity.WARN }
 
-	local virtual_lines_cfg = vim.tbl_extend("force", base, {
+	local virtual_lines_config = vim.tbl_extend('force', base_config, {
 		virtual_text = false,
 		virtual_lines = {
 			only_current_line = false,
-			prefix = "● ",
+			prefix = '● ',
 			severity = severity_min,
 		},
 	})
 
-	local ok = pcall(vim.diagnostic.config, virtual_lines_cfg)
+	local ok = pcall(vim.diagnostic.config, virtual_lines_config)
 	if not ok then
-		local virtual_text_cfg = vim.tbl_extend("force", base, {
+		local virtual_text_config = vim.tbl_extend('force', base_config, {
 			virtual_text = {
-				prefix = "●",
+				prefix = '●',
 				spacing = 2,
 				severity = severity_min,
 			},
 			virtual_text_win_col = math.max(80, vim.o.columns - 30),
 		})
-		vim.diagnostic.config(virtual_text_cfg)
+		vim.diagnostic.config(virtual_text_config)
 	end
 end
 
 -- ========================================
 -- Main Setup
 -- ========================================
+
 local M = {}
+
 function M.setup()
 	setup_platform()
 	setup_display()
@@ -150,4 +153,5 @@ function M.setup()
 	setup_editor()
 	setup_diagnostics()
 end
+
 return M

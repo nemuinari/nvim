@@ -11,21 +11,24 @@ return {
 		config = function()
 			vim.g.nord_italic = false
 			vim.cmd.colorscheme("nord")
+			-- 透明化は即座に適用
 			set_transparency()
 		end,
 	},
 	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
-		event = "VimEnter",
-		opts = {
-			options = {
-				theme = "nord",
-				disabled_filetypes = {
-					statusline = { "toggleterm" },
-					winbar = { "toggleterm" },
+		event = "VeryLazy",
+		config = function()
+			require('lualine').setup({
+				options = {
+					theme = "nord",
+					disabled_filetypes = {
+						statusline = { "toggleterm" },
+						winbar = { "toggleterm" },
+					},
 				},
-			},
-		},
+			})
+		end,
 	},
 }

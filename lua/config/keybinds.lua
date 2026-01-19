@@ -1,108 +1,94 @@
 -- ========================================
+-- Keybinds Configuration
+-- ========================================
+
+local M = {}
+
+-- ========================================
 -- Terminal Mode Keybinds
 -- ========================================
+
 local function setup_terminal_keymaps()
+	local opts = { silent = true }
 	local term_maps = {
-		{ key = "<Esc>", cmd = [[<C-\><C-n>]], desc = "Escape to normal mode" },
-		{ key = "<C-h>", cmd = [[<C-\><C-n><C-w>h]], desc = "Move to left window" },
-		{ key = "<C-j>", cmd = [[<C-\><C-n><C-w>j]], desc = "Move to bottom window" },
-		{ key = "<C-k>", cmd = [[<C-\><C-n><C-w>k]], desc = "Move to top window" },
-		{ key = "<C-l>", cmd = [[<C-\><C-n><C-w>l]], desc = "Move to right window" },
+		{ "t", "<Esc>", [[<C-\><C-n>]], "Escape to normal mode" },
+		{ "t", "<C-h>", [[<C-\><C-n><C-w>h]], "Move to left window" },
+		{ "t", "<C-j>", [[<C-\><C-n><C-w>j]], "Move to bottom window" },
+		{ "t", "<C-k>", [[<C-\><C-n><C-w>k]], "Move to top window" },
+		{ "t", "<C-l>", [[<C-\><C-n><C-w>l]], "Move to right window" },
 	}
 
-	for _, map in ipairs(term_maps) do
-		vim.keymap.set("t", map.key, map.cmd, { desc = map.desc })
+	for _, m in ipairs(term_maps) do
+		vim.keymap.set(m[1], m[2], m[3], vim.tbl_extend("force", opts, { desc = m[4] }))
 	end
 end
 
 -- ========================================
--- File Path Copy Utilities
+-- File Path Utilities
 -- ========================================
-local PATH_FORMATS = {
-	rel = function(abs)
-		return vim.fn.fnamemodify(abs, ":.")
-	end,
-	abs = function(abs)
-		return abs
-	end,
-	win = function(abs)
-		return abs:gsub("/", "\\")
-	end,
-}
 
-local function copy_path(format)
-	local abs_path = vim.fn.expand("%:p")
-
-	if abs_path == "" then
+-- Copy file path to clipboard
+local function copy_path(mode)
+	local path = vim.fn.expand("%:p")
+	if path == "" then
 		vim.notify("No file path to copy", vim.log.levels.WARN)
 		return
 	end
 
-	local formatter = PATH_FORMATS[format]
-	if not formatter then
-		vim.notify("Unknown path format: " .. format, vim.log.levels.ERROR)
-		return
+	if mode == "rel" then
+		path = vim.fn.fnamemodify(path, ":.")
+	elseif mode == "win" then
+		path = path:gsub("/", "\\")
 	end
 
-	local path = formatter(abs_path)
 	vim.fn.setreg("+", path)
-	vim.notify("Copied: " .. path, vim.log.levels.INFO)
+	vim.notify("Copied: " .. path)
 end
 
 local function setup_path_copy_keymaps()
-	local copy_maps = {
-		{ key = "<leader>cr", format = "rel", desc = "Copy relative path" },
-		{ key = "<leader>ca", format = "abs", desc = "Copy absolute path" },
-		{ key = "<leader>cw", format = "win", desc = "Copy Windows path" },
+	local maps = {
+		{ "<leader>cr", "rel", "Copy relative path" },
+		{ "<leader>ca", "abs", "Copy absolute path" },
+		{ "<leader>cw", "win", "Copy Windows path" },
 	}
 
-	for _, map in ipairs(copy_maps) do
-		vim.keymap.set("n", map.key, function()
-			copy_path(map.format)
-		end, { desc = map.desc })
+	for _, m in ipairs(maps) do
+		vim.keymap.set("n", m[1], function()
+			copy_path(m[2])
+		end, { desc = m[3] })
 	end
 end
 
 -- ========================================
--- Graceful Quit Command
+-- Graceful Exit Command
 -- ========================================
-local function delete_unnamed_buffers()
-	local deleted_count = 0
 
+-- Gracefully quit Neovim, cleaning unnamed buffers
+local function graceful_quit()
 	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
 		if vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_name(buf) == "" then
-			local ok = pcall(vim.api.nvim_buf_delete, buf, { force = true })
-			if ok then
-				deleted_count = deleted_count + 1
-			end
+			pcall(vim.api.nvim_buf_delete, buf, { force = true })
 		end
 	end
-
-	return deleted_count
-end
-
-local function graceful_quit()
-	delete_unnamed_buffers()
-
+	-- Attempt to quit, notify if save is required
 	local ok = pcall(vim.cmd, "quit")
 	if not ok then
-		pcall(vim.cmd, "quit!")
+		vim.notify("Save required before quitting", vim.log.levels.WARN)
 	end
 end
 
-local function setup_quit_command()
-	vim.api.nvim_create_user_command("Q", graceful_quit, {
-		desc = "Graceful quit (deletes unnamed buffers, force quit if needed)",
-	})
+local function setup_commands()
+	vim.api.nvim_create_user_command("Q", graceful_quit, { desc = "Quit with cleaning unnamed buffers" })
 end
 
 -- ========================================
 -- Main Setup
 -- ========================================
-local M = {}
+
 function M.setup()
-  setup_terminal_keymaps()
-  setup_path_copy_keymaps()
-  setup_quit_command()
+	setup_terminal_keymaps()
+	setup_path_copy_keymaps()
+	setup_commands()
 end
+
 return M

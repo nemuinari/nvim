@@ -36,6 +36,7 @@ ReferenceAlignment: Left
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AllowShortBlocksOnASingleLine: Empty
+AccessModifierOffset: -4
 
 # スペース
 SpaceAfterTemplateKeyword: true
@@ -45,3 +46,4 @@ SpacesInAngles: Never
 # include整理
 SortIncludes: CaseSensitive
 IncludeBlocks: Regroup
+

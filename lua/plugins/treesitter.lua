@@ -7,9 +7,9 @@
 -- ========================================
 
 local ENSURE_INSTALLED_LANGUAGES = {
-	'lua',
-	'vim',
-	'vimdoc',
+	"lua",
+	"vim",
+	"vimdoc",
 }
 
 -- ========================================
@@ -25,7 +25,7 @@ local function get_treesitter_config()
 			enable = true,
 		},
 		ensure_installed = ENSURE_INSTALLED_LANGUAGES,
-		auto_install = false,
+		auto_install = true,
 	}
 end
 
@@ -34,17 +34,16 @@ end
 -- ========================================
 
 return {
-	'nvim-treesitter/nvim-treesitter',
-	build = ':TSUpdate',
-	lazy = false,
+	"nvim-treesitter/nvim-treesitter",
+	build = ":TSUpdate",
+	event = "BufReadPost",
 	priority = 800,
 	config = function()
-		local ok, configs = pcall(require, 'nvim-treesitter.configs')
+		local ok, configs = pcall(require, "nvim-treesitter.configs")
 		if not ok then
-			vim.notify('Treesitter not ready. Run :TSUpdate', vim.log.levels.WARN)
 			return
 		end
-
 		configs.setup(get_treesitter_config())
 	end,
 }
+

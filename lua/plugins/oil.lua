@@ -39,9 +39,7 @@ end
 ---@return boolean
 local function is_normal_file(bufnr)
 	local bufname = vim.api.nvim_buf_get_name(bufnr)
-	return bufname ~= ""
-		and not is_oil_buffer(bufnr)
-		and not is_special_buffer(bufnr)
+	return bufname ~= "" and not is_oil_buffer(bufnr) and not is_special_buffer(bufnr)
 end
 
 -- ========================================
@@ -132,18 +130,13 @@ end
 -- ========================================
 -- Plugin Specification
 -- ========================================
-
 return {
 	"stevearc/oil.nvim",
 	dependencies = { "nvim-tree/nvim-web-devicons" },
-	lazy = false,
-	priority = 900,
+
+	cmd = "Oil",
 	keys = {
-		{
-			"<leader>e",
-			"<CMD>Oil --float<CR>",
-			desc = "Open file explorer",
-		},
+		{ "<leader>e", "<CMD>Oil --float<CR>", desc = "Open file explorer" },
 	},
 	config = function()
 		require("oil").setup(get_oil_config())

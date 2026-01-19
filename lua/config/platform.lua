@@ -1,142 +1,97 @@
 local M = {}
 
--- キャッシュストレージ
-local cache = {
-  platform = nil,
-  clipboard = nil,
+-- ========================================
+-- Platform Detection
+-- ========================================
+
+local is_windows = jit.os == "Windows"
+local is_wsl = not is_windows and vim.env.WSL_DISTRO_NAME ~= nil
+
+M.info = {
+	is_windows = is_windows,
+	is_wsl = is_wsl,
+	is_linux = jit.os == "Linux",
 }
 
--- プラットフォーム検出
-function M.get_platform()
-  if cache.platform then
-    return cache.platform
-  end
+-- ========================================
+-- Utility Functions
+-- ========================================
 
-  cache.platform = {
-    is_windows = vim.fn.has("win32") == 1,
-    is_wsl = vim.fn.has("wsl") == 1,
-  }
-
-  return cache.platform
-end
-
--- コマンド存在チェック
+local exe_cache = {}
+--- 実行可能ファイルの有無をキャッシュ付きで確認
 function M.has(cmd)
-  return vim.fn.executable(cmd) == 1
+	if exe_cache[cmd] == nil then
+		exe_cache[cmd] = vim.fn.executable(cmd) == 1
+	end
+	return exe_cache[cmd]
 end
 
--- clang-formatスタイル設定
-function M.clang_style(fallback)
-  local platform = M.get_platform()
-  
-  if platform.is_windows or platform.is_wsl then
-    return fallback
-  end
-  
-  return "file"
+-- ========================================
+-- Clipboard Configuration
+-- ========================================
+
+local function detect_clipboard()
+	-- WSL + win32yank
+	if M.info.is_wsl and M.has("win32yank.exe") then
+		return {
+			name = "win32yank-wsl",
+			copy = { ["+"] = "win32yank.exe -i --crlf", ["*"] = "win32yank.exe -i --crlf" },
+			paste = { ["+"] = "win32yank.exe -o --lf", ["*"] = "win32yank.exe -o --lf" },
+			cache_enabled = 1,
+		}
+	end
+
+	-- Wayland (wl-clipboard)
+	if vim.env.WAYLAND_DISPLAY and M.has("wl-copy") then
+		return {
+			name = "wl-clipboard",
+			copy = { ["+"] = "wl-copy --foreground --type text/plain" },
+			paste = { ["+"] = "wl-paste --no-newline" },
+		}
+	end
+
+	-- X11 (xclip / xsel)
+	if vim.env.DISPLAY then
+		if M.has("xclip") then
+			return {
+				name = "xclip",
+				copy = { ["+"] = "xclip -selection clipboard", ["*"] = "xclip -selection primary" },
+				paste = { ["+"] = "xclip -selection clipboard -o", ["*"] = "xclip -selection primary -o" },
+			}
+		elseif M.has("xsel") then
+			return {
+				name = "xsel",
+				copy = { ["+"] = "xsel --clipboard --input", ["*"] = "xsel --primary --input" },
+				paste = { ["+"] = "xsel --clipboard --output", ["*"] = "xsel --primary --output" },
+			}
+		end
+	end
+	return nil
 end
 
--- クリップボード設定のファクトリー関数
-local function create_clipboard_config(name, copy_plus, copy_star, paste_plus, paste_star, cache_enabled)
-  return {
-    name = name,
-    copy = {
-      ["+"] = copy_plus,
-      ["*"] = copy_star or "",
-    },
-    paste = {
-      ["+"] = paste_plus,
-      ["*"] = paste_star or "",
-    },
-    cache_enabled = cache_enabled or 0,
-  }
-end
-
--- クリップボード検出と設定
+local clipboard_cfg = detect_clipboard()
 function M.clipboard()
-  if cache.clipboard ~= nil then
-    return cache.clipboard
-  end
-
-  local platform = M.get_platform()
-
-  -- WSL + win32yank
-  if platform.is_wsl and M.has("win32yank.exe") then
-    cache.clipboard = create_clipboard_config(
-      "win32yank-wsl",
-      "win32yank.exe -i --crlf",
-      "win32yank.exe -i --crlf",
-      "win32yank.exe -o --lf",
-      "win32yank.exe -o --lf",
-      1
-    )
-    return cache.clipboard
-  end
-
-  -- Wayland clipboard (wl-clipboard)
-  if M.has("wl-copy") and M.has("wl-paste") then
-    cache.clipboard = create_clipboard_config(
-      "wl-clipboard",
-      "wl-copy --foreground --type text/plain",
-      nil,
-      "wl-paste --no-newline",
-      nil,
-      0
-    )
-    return cache.clipboard
-  end
-
-  -- X11 clipboard (xclip)
-  if M.has("xclip") then
-    cache.clipboard = create_clipboard_config(
-      "xclip",
-      "xclip -selection clipboard",
-      "xclip -selection primary",
-      "xclip -selection clipboard -o",
-      "xclip -selection primary -o",
-      0
-    )
-    return cache.clipboard
-  end
-
-  -- X11 clipboard (xsel)
-  if M.has("xsel") then
-    cache.clipboard = create_clipboard_config(
-      "xsel",
-      "xsel --clipboard --input",
-      "xsel --primary --input",
-      "xsel --clipboard --output",
-      "xsel --primary --output",
-      0
-    )
-    return cache.clipboard
-  end
-
-  -- フォールバック: クリップボード未検出
-  cache.clipboard = false
-  return nil
+	return clipboard_cfg
 end
 
--- シェル設定
+-- ========================================
+-- Shell & External Tools
+-- ========================================
+
 function M.shell()
-  local platform = M.get_platform()
-
-  if platform.is_windows then
-    return {
-      shell = "powershell",
-      shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command",
-      shellredir = ">",
-      shellpipe = "| Out-File -Encoding UTF8",
-    }
-  end
-
-  return nil
+	if not M.info.is_windows then
+		return nil
+	end
+	return {
+		shell = "powershell",
+		shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command",
+		shellredir = ">",
+		shellpipe = "| Out-File -Encoding UTF8",
+	}
 end
 
--- キャッシュクリア（デバッグ用）
-function M.clear_cache()
-  cache.platform = nil
-  cache.clipboard = nil
+function M.clang_style(fallback)
+	return (M.info.is_windows or M.info.is_wsl) and fallback or "file"
 end
 
 return M

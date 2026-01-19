@@ -1,9 +1,16 @@
+-- ========================================
+-- Languages & Formatting Configuration
+-- ========================================
+
 local M = {}
 
--- 定数定義
+-- ========================================
+-- Constants & Settings
+-- ========================================
+
 local INDENTS = {
 	c = 4,
-	cpp = 4,	
+	cpp = 4,
 	rust = 4,
 	python = 4,
 	lua = 2,
@@ -13,141 +20,81 @@ local INDENTS = {
 }
 
 local FILE_PATTERNS = {
-	clang = { "*.c", "*.cc", "*.cpp", "*.cxx", "*.h", "*.hh", "*.hpp", "*.hxx" },
+	clang = { "*.c", "*.cc", "*.cpp", "*.h", "*.hh", "*.hpp" },
 	rust = { "*.rs" },
 }
 
--- ヘルパー関数
-local function setup_indent()
-	local group = vim.api.nvim_create_augroup("LanguageConfig", { clear = true })
+-- ========================================
+-- Helper Functions
+-- ========================================
 
+--- インデントの自動適用
+local function setup_indent()
+	local group = vim.api.nvim_create_augroup("LangIndent", { clear = true })
 	vim.api.nvim_create_autocmd("FileType", {
 		group = group,
 		pattern = vim.tbl_keys(INDENTS),
 		callback = function(ev)
-			local indent = INDENTS[ev.match]
-			if not indent then
-				return
-			end
-			if not vim.opt_local.modifiable:get() then
-				vim.opt_local.modifiable = true
-			end
-			vim.opt_local.shiftwidth = indent
-			vim.opt_local.tabstop = indent
+			local sw = INDENTS[ev.match]
+			vim.opt_local.shiftwidth = sw
+			vim.opt_local.tabstop = sw
+			vim.opt_local.expandtab = true
 		end,
 	})
 end
 
-local function format_with_external_tool(bin, args, lines)
+--- 外部コマンドによるフォーマット実行
+local function format_buffer(bin, args)
 	if vim.fn.executable(bin) ~= 1 then
-		return nil
-	end
-
-	local out = vim.fn.systemlist(vim.list_extend({ bin }, args), lines)
-	if vim.v.shell_error ~= 0 then
-		return nil
-	end
-
-	return out
-end
-
-local function apply_formatting(bufnr, formatted_lines)
-	if not formatted_lines then
 		return
 	end
-
 	local view = vim.fn.winsaveview()
-	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted_lines)
+	local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+	local out = vim.fn.systemlist(vim.list_extend({ bin }, args), lines)
+	if vim.v.shell_error == 0 then
+		vim.api.nvim_buf_set_lines(0, 0, -1, false, out)
+	end
 	vim.fn.winrestview(view)
 end
 
--- Clang-Formatの設定
-local function setup_clang_format()
-	local group = vim.api.nvim_create_augroup("ClangFormatOnSave", { clear = true })
+-- ========================================
+-- Formatting Logic
+-- ========================================
+
+local function setup_manual_format()
+	local group = vim.api.nvim_create_augroup("ManualFormat", { clear = true })
+
+	-- Clang Format
 	vim.api.nvim_create_autocmd("BufWritePre", {
 		group = group,
 		pattern = FILE_PATTERNS.clang,
-		callback = function(ev)
-			local bin = vim.g.clang_format_cmd or "clang-format"
-			local lines = vim.api.nvim_buf_get_lines(ev.buf, 0, -1, false)
-			local filename = vim.api.nvim_buf_get_name(ev.buf)
-			local assume_filename = filename ~= "" and filename or "file.cpp"
-			local formatted = format_with_external_tool(
-				bin,
-				{
-					"--style=file",
-					"--assume-filename=" .. assume_filename
-				},
-				lines
-			)
-			apply_formatting(ev.buf, formatted)
+		callback = function()
+			format_buffer("clang-format", { "--style=file", "--assume-filename=" .. vim.api.nvim_buf_get_name(0) })
 		end,
 	})
-end
 
-local function setup_rust_format()
-	local group = vim.api.nvim_create_augroup("RustFormatOnSave", { clear = true })
-
+	-- Rust Format
 	vim.api.nvim_create_autocmd("BufWritePre", {
 		group = group,
 		pattern = FILE_PATTERNS.rust,
-		callback = function(ev)
-			local bin = vim.g.rustfmt_cmd or "rustfmt"
-			local lines = vim.api.nvim_buf_get_lines(ev.buf, 0, -1, false)
-
-			local formatted = format_with_external_tool(bin, { "--emit=stdout", "--quiet" }, lines)
-			apply_formatting(ev.buf, formatted)
-		end,
-	})
-end
-
-local function setup_lsp_format()
-	local group = vim.api.nvim_create_augroup("LspFormatOnSave", { clear = true })
-
-	vim.api.nvim_create_autocmd("BufWritePre", {
-		group = group,
 		callback = function()
-			if vim.lsp and vim.lsp.buf then
-				pcall(vim.lsp.buf.format, { async = false })
-			end
+			format_buffer("rustfmt", { "--emit=stdout", "--quiet" })
 		end,
 	})
 end
 
--- メイン関数
+-- ========================================
+-- Main Setup
+-- ========================================
+
 function M.setup()
 	setup_indent()
 
-	local use_conform = vim.g.use_conform
-	if use_conform == nil then
-		use_conform = true
-	end
-
+	-- Check if Conform is used for formatting
+	local use_conform = vim.g.use_conform ~= false
 	if not use_conform then
-		setup_clang_format()
-		setup_rust_format()
+		setup_manual_format()
 	end
 end
-
--- Lua LSP diagnostics undefined global
-local function setup_lua_ls_globals()
-	local lspconfig = vim.lsp.config
-	if not lspconfig then
-		return
-	end
-	if lspconfig.lua_ls and lspconfig.lua_ls.setup then
-		lspconfig.lua_ls.setup({
-			settings = {
-				Lua = {
-					diagnostics = {
-						globals = { "vim" },
-					},
-				},
-			},
-		})
-	end
-end
-
-setup_lua_ls_globals()
 
 return M

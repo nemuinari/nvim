@@ -162,48 +162,30 @@ end
 -- Plugin Configurations
 -- ========================================
 return {
-	-- Mason core
+	-- Mason.nvim
 	{
 		"williamboman/mason.nvim",
-		opts = {},
-		config = function()
-			local ok, mason = pcall(require, "mason")
-			if not ok then
-				return
-			end
-
-			mason.setup({
-				ui = {
-					border = "rounded",
-					icons = {
-						package_installed = "✓",
-						package_pending = "➜",
-						package_uninstalled = "✗",
-					},
-				},
-				PATH = "append",
-			})
-
+		cmd = { "Mason", "MasonInstall", "MasonUpdate" },
+		opts = {
+			ui = { border = "rounded" },
+			PATH = "append",
+		},
+		config = function(_, opts)
+			require("mason").setup(opts)
 			setup_windows_path()
 		end,
 	},
 
-	-- Mason tool installer
+	-- Mason Tool Installer
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 		dependencies = { "williamboman/mason.nvim" },
+		event = "VeryLazy",
 		config = function()
-			local ok, installer = pcall(require, "mason-tool-installer")
-			if not ok then
-				return
-			end
-
-			installer.setup({
+			require("mason-tool-installer").setup({
 				ensure_installed = MASON_TOOLS,
 				run_on_start = true,
-				auto_update = false,
 				start_delay = 3000,
-				debounce_hours = 24,
 			})
 		end,
 	},
@@ -211,47 +193,50 @@ return {
 	-- LSP Configuration
 	{
 		"neovim/nvim-lspconfig",
-		event = "BufReadPre",
+		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"williamboman/mason-lspconfig.nvim",
 			"williamboman/mason.nvim",
 		},
 		config = function()
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-			-- Setup mason-lspconfig
+			-- 必要なモジュールの安全な読み込み
 			local ok_mason, mason_lspconfig = pcall(require, "mason-lspconfig")
-			if ok_mason then
-				mason_lspconfig.setup({
-					ensure_installed = vim.tbl_keys(LSP_SERVERS),
-				})
-			end
+			local ok_lspconfig, lspconfig = pcall(require, "lspconfig")
 
-			-- Setup LSP servers
-
-			local lspconfig = vim.lsp.config
-			if not lspconfig then
+			if not (ok_mason and ok_lspconfig) then
 				return
 			end
 
-			for server_name, server_opts in pairs(LSP_SERVERS) do
-				server_opts.capabilities = capabilities
-				if lspconfig[server_name] and lspconfig[server_name].setup then
+			-- LSP クライアントの capabilities を取得
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+			-- nvim-cmp 経由で capabilities を拡張
+			mason_lspconfig.setup({
+				ensure_installed = vim.tbl_keys(LSP_SERVERS),
+			})
+
+			-- LSP サーバーのセットアップ
+			if mason_lspconfig.setup_handlers then
+				mason_lspconfig.setup_handlers({
+					function(server_name)
+						local server_opts = LSP_SERVERS[server_name] or {}
+						server_opts.capabilities = capabilities
+						lspconfig[server_name].setup(server_opts)
+					end,
+				})
+			else
+				-- フォールバック: 手動で各サーバーをセットアップ
+				for server_name, server_opts in pairs(LSP_SERVERS) do
+					server_opts.capabilities = capabilities
 					lspconfig[server_name].setup(server_opts)
 				end
 			end
 
-			-- LSP attach autocmd
+			-- LSP アタッチ時のオートコマンド設定
 			vim.api.nvim_create_autocmd("LspAttach", {
 				callback = on_lsp_attach,
 				desc = "Configure LSP keymaps and features on attach",
 			})
-
-			-- Load language-specific configurations
-			local ok_langs, langs = pcall(require, "config.languages")
-			if ok_langs and langs.setup then
-				langs.setup()
-			end
 		end,
 	},
 }

@@ -9,32 +9,32 @@
 local function get_telescope_keymaps()
 	return {
 		{
-			'<leader>ff',
+			"<leader>ff",
 			function()
-				require('telescope.builtin').find_files()
+				require("telescope.builtin").find_files()
 			end,
-			desc = 'Find files',
+			desc = "Find files",
 		},
 		{
-			'<leader>fg',
+			"<leader>fg",
 			function()
-				require('telescope.builtin').live_grep()
+				require("telescope.builtin").live_grep()
 			end,
-			desc = 'Live grep',
+			desc = "Live grep",
 		},
 		{
-			'<leader>fb',
+			"<leader>fb",
 			function()
-				require('telescope.builtin').buffers()
+				require("telescope.builtin").buffers()
 			end,
-			desc = 'Buffers',
+			desc = "Buffers",
 		},
 		{
-			'<leader>fh',
+			"<leader>fh",
 			function()
-				require('telescope.builtin').help_tags()
+				require("telescope.builtin").help_tags()
 			end,
-			desc = 'Help tags',
+			desc = "Help tags",
 		},
 	}
 end
@@ -46,11 +46,11 @@ end
 local function get_telescope_config()
 	return {
 		defaults = {
-			layout_strategy = 'horizontal',
+			layout_strategy = "horizontal",
 			mappings = {
 				i = {
-					['<Esc>'] = function(...)
-						return require('telescope.actions').close(...)
+					["<Esc>"] = function(...)
+						return require("telescope.actions").close(...)
 					end,
 				},
 			},
@@ -67,9 +67,9 @@ local function get_telescope_config()
 end
 
 local function setup_telescope()
-	local telescope = require('telescope')
+	local telescope = require("telescope")
 	telescope.setup(get_telescope_config())
-	pcall(telescope.load_extension, 'file_browser')
+	pcall(telescope.load_extension, "file_browser")
 end
 
 -- ========================================
@@ -77,11 +77,12 @@ end
 -- ========================================
 
 return {
-	'nvim-telescope/telescope.nvim',
+	"nvim-telescope/telescope.nvim",
 	dependencies = {
-		'nvim-lua/plenary.nvim',
-		'nvim-telescope/telescope-file-browser.nvim',
+		"nvim-lua/plenary.nvim",
+		"nvim-telescope/telescope-file-browser.nvim",
 	},
 	keys = get_telescope_keymaps(),
 	config = setup_telescope,
 }
+

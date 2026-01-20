@@ -199,40 +199,28 @@ return {
 			"williamboman/mason.nvim",
 		},
 		config = function()
-			-- 必要なモジュールの安全な読み込み
-			local ok_mason, mason_lspconfig = pcall(require, "mason-lspconfig")
-			local ok_lspconfig, lspconfig = pcall(require, "lspconfig")
-
-			if not (ok_mason and ok_lspconfig) then
-				return
-			end
-
-			-- LSP クライアントの capabilities を取得
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-			-- nvim-cmp 経由で capabilities を拡張
+			local mason_lspconfig = require("mason-lspconfig")
 			mason_lspconfig.setup({
 				ensure_installed = vim.tbl_keys(LSP_SERVERS),
 			})
 
-			-- LSP サーバーのセットアップ
-			if mason_lspconfig.setup_handlers then
-				mason_lspconfig.setup_handlers({
-					function(server_name)
-						local server_opts = LSP_SERVERS[server_name] or {}
-						server_opts.capabilities = capabilities
-						lspconfig[server_name].setup(server_opts)
-					end,
-				})
-			else
-				-- フォールバック: 手動で各サーバーをセットアップ
-				for server_name, server_opts in pairs(LSP_SERVERS) do
-					server_opts.capabilities = capabilities
-					lspconfig[server_name].setup(server_opts)
+			-- LSP Server Setup
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+			-- Enable snippet support
+			for server_name, server_opts in pairs(LSP_SERVERS) do
+				server_opts.capabilities = capabilities
+
+				-- ========================================================
+				-- 警告回避: 'Attempt to call a nil value (field 'setup')'
+				-- ========================================================
+				local configs = require("lspconfig.configs")
+				if configs[server_name] then
+					configs[server_name].setup(server_opts)
 				end
 			end
 
-			-- LSP アタッチ時のオートコマンド設定
+			-- LSP Attach Autocommand
 			vim.api.nvim_create_autocmd("LspAttach", {
 				callback = on_lsp_attach,
 				desc = "Configure LSP keymaps and features on attach",

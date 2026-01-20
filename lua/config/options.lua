@@ -38,10 +38,12 @@ local function setup_display()
 	vim.opt.number = true
 	vim.opt.relativenumber = true
 	vim.opt.cursorline = true
-	vim.opt.laststatus = 3 -- グローバルステータスライン
-	vim.opt.signcolumn = "yes" -- サインカラムを常に表示
+	vim.opt.laststatus = 3
+	vim.opt.signcolumn = "yes"
 	vim.opt.mouse = "a"
-	vim.opt.guicursor = "n-v-c-i:block" -- カーソル形状の固定
+	vim.opt.guicursor = "n-v-c-i:block"
+	-- 補完メニューの設定
+	vim.opt.completeopt = "menu,menuone,noselect"
 end
 
 -- ========================================
@@ -70,10 +72,11 @@ end
 local function setup_editor()
 	vim.opt.fileencoding = "utf-8"
 	vim.opt.fileformats = "unix,dos"
-	vim.opt.undofile = true -- 永続的なアンドゥ
-	vim.opt.updatetime = 250 -- 遅延を減らす (デフォルト 4000ms)
+	vim.opt.undofile = true
+	vim.opt.updatetime = 250
 	vim.opt.swapfile = false
 	vim.opt.clipboard = "unnamedplus"
+	vim.opt.virtualedit = "block"
 end
 
 -- ========================================
@@ -81,12 +84,12 @@ end
 -- ========================================
 
 local function setup_diagnostics()
-	-- カスタムサインの定義
-	local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = "󰋽 " }
-	for type, icon in pairs(signs) do
-		local hl = "DiagnosticSign" .. type
-		vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-	end
+	local signs = {
+		[vim.diagnostic.severity.ERROR] = "󰅚 ",
+		[vim.diagnostic.severity.WARN] = "󰀪 ",
+		[vim.diagnostic.severity.HINT] = "󰌶 ",
+		[vim.diagnostic.severity.INFO] = "󰋽 ",
+	}
 
 	vim.diagnostic.config({
 		virtual_text = {
@@ -98,11 +101,13 @@ local function setup_diagnostics()
 			focused = false,
 			style = "minimal",
 			border = "rounded",
-			source = "always",
+			source = true,
 			header = "",
 			prefix = "",
 		},
-		signs = true,
+		signs = {
+			text = signs,
+		},
 		underline = true,
 		update_in_insert = false,
 		severity_sort = true,
@@ -124,4 +129,3 @@ function M.setup()
 end
 
 return M
-

@@ -46,4 +46,3 @@ return {
 		configs.setup(get_treesitter_config())
 	end,
 }
-

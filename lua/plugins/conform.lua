@@ -1,17 +1,15 @@
 -- ========================================
--- Conform.nvim: フォーマッター設定
+-- Conform.nvim: Universal Formatter
 -- ========================================
 
 return {
 	"stevearc/conform.nvim",
-	-- ファイル保存直前に実行
 	event = { "BufWritePre" },
-	-- コマンドからも実行可能
 	cmd = { "ConformInfo" },
 
 	opts = {
 		-- ----------------------------------------
-		-- 言語別フォーマッターの定義
+		-- formatter configuration per filetype
 		-- ----------------------------------------
 		formatters_by_ft = {
 			-- Lua / Rust / Python
@@ -25,7 +23,7 @@ return {
 			javascriptreact = { "prettierd", "prettier", stop_after_first = true },
 			typescriptreact = { "prettierd", "prettier", stop_after_first = true },
 
-			-- Web関連: Prettier
+			-- Web: Prettier
 			html = { "prettier" },
 			css = { "prettier" },
 			json = { "prettier" },
@@ -44,34 +42,28 @@ return {
 		},
 
 		-- ----------------------------------------
-		-- 保存時の自動実行設定
+		-- options for formatting on save
 		-- ----------------------------------------
 		format_on_save = function(bufnr)
-			-- node_modules 内のファイルは除外
 			local bufname = vim.api.nvim_buf_get_name(bufnr)
 			if bufname:match("/node_modules/") then
 				return
 			end
 
 			return {
-				timeout_ms = 500, -- 500ms以内に完了しない場合は中止
-				lsp_fallback = true, -- フォーマッターがない場合は LSP で整形
+				timeout_ms = 500,
+				lsp_fallback = true,
 			}
 		end,
 
 		-- ----------------------------------------
-		-- フォーマッターごとの詳細オプション
+		-- formatter specific optionsk
 		-- ----------------------------------------
 		formatters = {
 			shfmt = {
 				prepend_args = { "-i", "2" },
 			},
-			-- Prettier の挙動
-			-- prettier = {
-			--     condition = function(self, ctx)
-			--         return vim.fs.find({ ".prettierrc" }, { path = ctx.filename, upward = true })[1]
-			--     end,
-			-- },
+			-- add more formatter specific options here
 		},
 	},
 }

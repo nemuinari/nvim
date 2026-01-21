@@ -34,9 +34,7 @@ local function get_center_items()
 			desc_hl = "String",
 			key = "f",
 			key_hl = "Number",
-			action = function()
-				require("telescope.builtin").find_files()
-			end,
+			action = "Oil --float",
 		},
 		{
 			icon = "󰋚  ",
@@ -106,4 +104,3 @@ return {
 		require("dashboard").setup(get_dashboard_config())
 	end,
 }
-

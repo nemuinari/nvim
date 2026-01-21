@@ -2,51 +2,48 @@
 -- Telescope Configuration
 -- ========================================
 
--- ========================================
--- Keymaps
--- ========================================
-
 local function get_telescope_keymaps()
 	return {
 		{
-			"<leader>ff",
+			"<leader>fr", -- find recent
 			function()
-				require("telescope.builtin").find_files()
+				require("telescope.builtin").oldfiles()
 			end,
-			desc = "Find files",
+			desc = "Recent files",
 		},
 		{
-			"<leader>fg",
-			function()
-				require("telescope.builtin").live_grep()
-			end,
-			desc = "Live grep",
-		},
-		{
-			"<leader>fb",
+			"<leader>fb", -- find buffers
 			function()
 				require("telescope.builtin").buffers()
 			end,
 			desc = "Buffers",
 		},
-		{
-			"<leader>fh",
-			function()
-				require("telescope.builtin").help_tags()
-			end,
-			desc = "Help tags",
-		},
 	}
 end
-
--- ========================================
--- Telescope Setup
--- ========================================
 
 local function get_telescope_config()
 	return {
 		defaults = {
+			vimgrep_arguments = {
+				"rg",
+				"--color=never",
+				"--no-heading",
+				"--with-filename",
+				"--line-number",
+				"--column",
+				"--smart-case",
+				"--hidden",
+				"--glob",
+				"!**/.git/*",
+			},
 			layout_strategy = "horizontal",
+			layout_config = {
+				horizontal = {
+					prompt_position = "top",
+					preview_width = 0.55,
+				},
+			},
+			sorting_strategy = "ascending",
 			mappings = {
 				i = {
 					["<Esc>"] = function(...)
@@ -55,34 +52,16 @@ local function get_telescope_config()
 				},
 			},
 		},
-		extensions = {
-			file_browser = {
-				hijack_netrw = false,
-				respect_gitignore = true,
-				hidden = true,
-				grouped = true,
-			},
-		},
 	}
 end
 
 local function setup_telescope()
-	local telescope = require("telescope")
-	telescope.setup(get_telescope_config())
-	pcall(telescope.load_extension, "file_browser")
+	require("telescope").setup(get_telescope_config())
 end
-
--- ========================================
--- Plugin Specification
--- ========================================
 
 return {
 	"nvim-telescope/telescope.nvim",
-	dependencies = {
-		"nvim-lua/plenary.nvim",
-		"nvim-telescope/telescope-file-browser.nvim",
-	},
+	dependencies = { "nvim-lua/plenary.nvim" },
 	keys = get_telescope_keymaps(),
 	config = setup_telescope,
 }
-

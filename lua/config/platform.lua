@@ -18,7 +18,6 @@ M.info = {
 -- ========================================
 
 local exe_cache = {}
---- 実行可能ファイルの有無をキャッシュ付きで確認
 function M.has(cmd)
 	if exe_cache[cmd] == nil then
 		exe_cache[cmd] = vim.fn.executable(cmd) == 1

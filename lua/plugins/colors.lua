@@ -7,7 +7,6 @@ local function setup_transparency()
 		group = group,
 		pattern = "*",
 		callback = function()
-			-- 背景の透明化
 			local hl_groups = {
 				"Normal",
 				"NormalFloat",
@@ -23,14 +22,11 @@ local function setup_transparency()
 				vim.api.nvim_set_hl(0, group_name, { bg = "none", ctermbg = "none" })
 			end
 
-			-- EndOfBuffer の透明化
 			vim.api.nvim_set_hl(0, "EndOfBuffer", { fg = "#0c0c0c" })
-
-			-- Oil プラグインの隠しファイル表示をコメント色に設定
 			vim.api.nvim_set_hl(0, "OilHidden", { link = "Comment" })
 
 			-- ========================================
-			-- 型表示 (Inlay Hints) をコメント色にする
+			-- LSP Inlay Hints & Codeium
 			-- ========================================
 			vim.api.nvim_set_hl(0, "LspInlayHint", { link = "Comment" })
 			vim.api.nvim_set_hl(0, "CodeiumSuggestion", { link = "Comment" })

@@ -43,6 +43,7 @@ local MASON_TOOLS = {
 	"clang-format",
 	"shfmt",
 	"taplo",
+	--	"ripgrep", -- for windows users, install manually due to antivirus false positive
 }
 
 -- ========================================
@@ -212,7 +213,7 @@ return {
 				server_opts.capabilities = capabilities
 
 				-- ========================================================
-				-- 警告回避: 'Attempt to call a nil value (field 'setup')'
+				-- Attempt to call a nil value (field 'setup')
 				-- ========================================================
 				local configs = require("lspconfig.configs")
 				if configs[server_name] then

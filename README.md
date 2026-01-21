@@ -39,8 +39,6 @@
 
 ## External Dependencies
 
-この設定の Grep 検索には `ripgrep` が必須です。
-
 ```powershell
 # Windows (PowerShell)
 winget install BurntSushi.ripgrep.MSVC

@@ -6,7 +6,7 @@
 
 | Key         | Action                |
 | :---------- | :-------------------- |
-| `<Space>`   | **Leader Key**        |
+| `<Space>`   | Leader Key            |
 | `<leader>e` | Oil (Floating) を開く |
 | `-`         | Oil (Normal) を開く   |
 

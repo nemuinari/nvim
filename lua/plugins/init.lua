@@ -8,4 +8,5 @@ return {
 	require("plugins.conform"),
 	require("plugins.lazydev"),
 	require("plugins.dashboard"),
+	require("plugins.gitsigns"),
 }

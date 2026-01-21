@@ -1,54 +1,61 @@
 -- ========================================
--- Colorscheme & UI Configuration
+-- Colorscheme & UI Configuration (Catppuccin)
 -- ========================================
-local function setup_transparency()
-	local group = vim.api.nvim_create_augroup("TransparentBG", { clear = true })
-	vim.api.nvim_create_autocmd("ColorScheme", {
-		group = group,
-		pattern = "*",
-		callback = function()
-			local hl_groups = {
-				"Normal",
-				"NormalFloat",
-				"LineNr",
-				"Folded",
-				"NonText",
-				"SpecialKey",
-				"VertSplit",
-				"SignColumn",
-				"EndOfBuffer",
-			}
-			for _, group_name in ipairs(hl_groups) do
-				vim.api.nvim_set_hl(0, group_name, { bg = "none", ctermbg = "none" })
-			end
-
-			vim.api.nvim_set_hl(0, "EndOfBuffer", { fg = "#0c0c0c" })
-			vim.api.nvim_set_hl(0, "OilHidden", { link = "Comment" })
-
-			-- ========================================
-			-- LSP Inlay Hints & Codeium
-			-- ========================================
-			vim.api.nvim_set_hl(0, "LspInlayHint", { link = "Comment" })
-			vim.api.nvim_set_hl(0, "CodeiumSuggestion", { link = "Comment" })
-		end,
-	})
-end
-
 return {
-	-- Colorscheme: Nord
+	-- Colorscheme: Catppuccin
 	{
-		"shaunsingh/nord.nvim",
+		"catppuccin/nvim",
+		name = "catppuccin",
 		lazy = false,
 		priority = 1000,
 		config = function()
-			vim.g.nord_italic = false
-			vim.g.nord_bold = true
-			vim.g.nord_borders = true
+			require("catppuccin").setup({
+				flavour = "mocha", -- latte, frappe, macchiato, mocha
+				transparent_background = true,
+				term_colors = true,
+				integrations = {
+					cmp = true,
+					gitsigns = true,
+					treesitter = true,
+					notify = true,
+					dashboard = true,
+					lsp_trouble = true,
+					mason = true,
+					native_lsp = {
+						enabled = true,
+						virtual_text = {
+							errors = { "italic" },
+							hints = { "italic" },
+							warnings = { "italic" },
+							information = { "italic" },
+						},
+						underlines = {
+							errors = { "undercurl" },
+							hints = { "undercurl" },
+							warnings = { "undercurl" },
+							information = { "undercurl" },
+						},
+						inlay_hints = {
+							background = true,
+						},
+					},
+				},
+				custom_highlights = function(colors)
+					return {
+						-- LSP Inlay Hints
+						LspInlayHint = { fg = colors.overlay0, style = { "italic" } },
+						CodeiumSuggestion = { fg = colors.overlay0 },
+						OilHidden = { fg = colors.overlay0 },
+						EndOfBuffer = { fg = colors.base },
+					}
+				end,
+			})
 
-			setup_transparency()
-			vim.cmd.colorscheme("nord")
+			-- choose colorscheme
+			vim.cmd.colorscheme("catppuccin")
 
-			vim.opt.fillchars = { eob = " " }
+			-- Remove ~ from the end of the buffer
+			vim.opt.fillchars:append({ eob = " " })
 		end,
 	},
 
@@ -59,13 +66,22 @@ return {
 		event = "VeryLazy",
 		opts = {
 			options = {
-				theme = "nord",
+				theme = "catppuccin",
 				component_separators = { left = "│", right = "│" },
-				section_separators = { left = "", right = "" },
+				section_separators = { left = "", right = "" }, -- fancy separators
 				disabled_filetypes = {
 					statusline = { "toggleterm", "dashboard", "Alpha" },
 				},
 				globalstatus = true,
+			},
+			sections = {
+				lualine_x = {
+					"encoding",
+					{ "fileformat", icons_enabled = false },
+					"filetype",
+				},
+				lualine_y = { "progress" },
+				lualine_z = { "location" },
 			},
 		},
 	},

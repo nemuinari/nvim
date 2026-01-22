@@ -9,9 +9,9 @@ local INDENTS = {
 	rust = 4,
 	python = 4,
 	lua = 4,
-	javascript = 4,
-	typescript = 4,
-	json = 4,
+	javascript = 2,
+	typescript = 2,
+	json = 2,
 }
 
 function M.setup()

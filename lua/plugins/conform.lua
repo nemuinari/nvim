@@ -18,10 +18,10 @@ return {
 			python = { "isort", "black" },
 
 			-- JavaScript / TypeScript
-			javascript = { "prettierd", "prettier", stop_after_first = true },
-			typescript = { "prettierd", "prettier", stop_after_first = true },
-			javascriptreact = { "prettierd", "prettier", stop_after_first = true },
-			typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+			javascript = { "prettier" },
+			typescript = { "prettier" },
+			javascriptreact = { "prettier" },
+			typescriptreact = { "prettier" },
 
 			-- Web: Prettier
 			html = { "prettier" },
@@ -51,7 +51,7 @@ return {
 			end
 
 			return {
-				timeout_ms = 500,
+				timeout_ms = 2000,
 				lsp_fallback = true,
 			}
 		end,

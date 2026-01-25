@@ -48,6 +48,15 @@ local function get_center_items()
 			end,
 		},
 		{
+			icon = "󰒲  ",
+			icon_hl = "Title",
+			desc = "Lazy Manager",
+			desc_hl = "String",
+			key = "l",
+			key_hl = "Number",
+			action = "Lazy",
+		},
+		{
 			icon = "󰗼  ",
 			icon_hl = "Title",
 			desc = "Quit",

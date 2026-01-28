@@ -14,13 +14,13 @@ local function setup_platform()
 		return
 	end
 
-	-- クリップボード設定
+	-- clipboard configuration
 	local clip = platform.clipboard()
 	if clip then
 		vim.g.clipboard = clip
 	end
 
-	-- シェル設定
+	-- shell configuration
 	local shell = platform.shell()
 	if shell then
 		vim.opt.shell = shell.shell
@@ -39,10 +39,10 @@ local function setup_display()
 	vim.opt.relativenumber = true
 	vim.opt.cursorline = true
 	vim.opt.laststatus = 3
+	vim.opt.scrolloff = 1
 	vim.opt.signcolumn = "yes"
 	vim.opt.mouse = "a"
 	vim.opt.guicursor = "n-v-c-i:block"
-	-- 補完メニューの設定
 	vim.opt.completeopt = "menu,menuone,noselect"
 end
 
@@ -119,7 +119,7 @@ end
 -- ========================================
 
 function M.setup()
-	-- 各種設定の初期化
+	-- Call individual setup functions
 	setup_platform()
 	setup_display()
 	setup_indentation()

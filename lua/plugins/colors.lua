@@ -13,6 +13,7 @@ return {
 				flavour = "mocha", -- latte, frappe, macchiato, mocha
 				transparent_background = true,
 				term_colors = true,
+				compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
 				integrations = {
 					cmp = true,
 					gitsigns = true,

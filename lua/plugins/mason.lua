@@ -75,13 +75,13 @@ end
 -- Inlay Hints Setup
 -- ========================================
 local function set_inlay_hint(bufnr, enabled)
-	-- Neovim 0.10+ の新しい API
+	-- use new API if available
 	if vim.lsp.inlay_hint and type(vim.lsp.inlay_hint.enable) == "function" then
 		pcall(vim.lsp.inlay_hint.enable, enabled, { bufnr = bufnr })
 		return
 	end
 
-	-- 古い API のフォールバック
+	-- fallback to buffer method
 	if vim.lsp.buf and type(vim.lsp.buf.inlay_hint) == "function" then
 		local ok = pcall(vim.lsp.buf.inlay_hint, bufnr, enabled)
 		if not ok then
@@ -167,6 +167,7 @@ return {
 	{
 		"williamboman/mason.nvim",
 		cmd = { "Mason", "MasonInstall", "MasonUpdate" },
+		event = "BufReadPre", -- load mason early for LSP setup
 		opts = {
 			ui = { border = "rounded" },
 			PATH = "append",
@@ -185,7 +186,7 @@ return {
 		config = function()
 			require("mason-tool-installer").setup({
 				ensure_installed = MASON_TOOLS,
-				run_on_start = true,
+				run_on_start = false,
 				start_delay = 3000,
 			})
 		end,
@@ -196,35 +197,24 @@ return {
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
-			"williamboman/mason-lspconfig.nvim",
 			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
 		},
 		config = function()
-			local mason_lspconfig = require("mason-lspconfig")
-			mason_lspconfig.setup({
+			require("mason-lspconfig").setup({
 				ensure_installed = vim.tbl_keys(LSP_SERVERS),
 			})
 
-			-- LSP Server Setup
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
+			local lspconfig = require("lspconfig")
 
-			-- Enable snippet support
 			for server_name, server_opts in pairs(LSP_SERVERS) do
 				server_opts.capabilities = capabilities
-
-				-- ========================================================
-				-- Attempt to call a nil value (field 'setup')
-				-- ========================================================
-				local configs = require("lspconfig.configs")
-				if configs[server_name] then
-					configs[server_name].setup(server_opts)
-				end
+				lspconfig[server_name].setup(server_opts)
 			end
 
-			-- LSP Attach Autocommand
 			vim.api.nvim_create_autocmd("LspAttach", {
 				callback = on_lsp_attach,
-				desc = "Configure LSP keymaps and features on attach",
 			})
 		end,
 	},

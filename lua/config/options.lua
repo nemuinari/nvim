@@ -39,7 +39,7 @@ local function setup_display()
 	vim.opt.relativenumber = true
 	vim.opt.cursorline = true
 	vim.opt.laststatus = 3
-	vim.opt.scrolloff = 1
+	-- vim.opt.scrolloff = 1
 	vim.opt.signcolumn = "yes"
 	vim.opt.mouse = "a"
 	vim.opt.guicursor = "n-v-c-i:block"

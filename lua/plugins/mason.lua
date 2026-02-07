@@ -221,7 +221,7 @@ return {
 			})
 
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			local lsp_configs = require("lspconfig.configs")
+			local lspconfig = require("lspconfig")
 			local util = require("lspconfig.util")
 
 			for server_name, server_opts in pairs(LSP_SERVERS) do
@@ -234,8 +234,8 @@ return {
 					end
 				end
 
-				if lsp_configs[server_name] then
-					lsp_configs[server_name].setup(server_opts)
+				if lspconfig[server_name] then
+					lspconfig[server_name].setup(server_opts)
 				end
 			end
 

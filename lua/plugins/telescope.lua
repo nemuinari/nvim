@@ -18,32 +18,19 @@ local function get_telescope_keymaps()
 			end,
 			desc = "Buffers",
 		},
+		{
+			"<leader>fh", -- find help
+			function()
+				require("telescope.builtin").help_tags()
+			end,
+			desc = "Help tags",
+		},
 	}
 end
 
 local function get_telescope_config()
 	return {
 		defaults = {
-			vimgrep_arguments = {
-				"rg",
-				"--color=never",
-				"--no-heading",
-				"--with-filename",
-				"--line-number",
-				"--column",
-				"--smart-case",
-				"--hidden",
-				"--glob",
-				"!**/.git/*",
-			},
-			layout_strategy = "horizontal",
-			layout_config = {
-				horizontal = {
-					prompt_position = "top",
-					preview_width = 0.55,
-				},
-			},
-			sorting_strategy = "ascending",
 			mappings = {
 				i = {
 					["<Esc>"] = function(...)

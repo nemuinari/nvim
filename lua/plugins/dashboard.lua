@@ -21,7 +21,7 @@ local function get_center_items()
 		{
 			icon = "󰈔  ",
 			icon_hl = "Title",
-			desc = "New File",
+			desc = "New file",
 			desc_hl = "String",
 			key = "n",
 			key_hl = "Number",
@@ -30,7 +30,7 @@ local function get_center_items()
 		{
 			icon = "󰈞  ",
 			icon_hl = "Title",
-			desc = "Find File",
+			desc = "Find file",
 			desc_hl = "String",
 			key = "f",
 			key_hl = "Number",
@@ -39,7 +39,7 @@ local function get_center_items()
 		{
 			icon = "󰒲  ",
 			icon_hl = "Title",
-			desc = "Lazy Manager",
+			desc = "Lazy manager",
 			desc_hl = "String",
 			key = "l",
 			key_hl = "Number",
@@ -81,6 +81,11 @@ end
 local function get_dashboard_config()
 	return {
 		theme = "doom",
+		hide = {
+			statusline = true,
+			tabline = true,
+			winbar = true,
+		},
 		config = {
 			header = get_header(),
 			center = get_center_items(),

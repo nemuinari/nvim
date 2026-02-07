@@ -37,17 +37,6 @@ local function get_center_items()
 			action = "Oil --float",
 		},
 		{
-			icon = "󰋚  ",
-			icon_hl = "Title",
-			desc = "Recent Files",
-			desc_hl = "String",
-			key = "r",
-			key_hl = "Number",
-			action = function()
-				require("telescope.builtin").oldfiles()
-			end,
-		},
-		{
 			icon = "󰒲  ",
 			icon_hl = "Title",
 			desc = "Lazy Manager",

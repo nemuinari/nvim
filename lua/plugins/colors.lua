@@ -9,11 +9,16 @@ return {
 		lazy = false,
 		priority = 1000,
 		config = function()
-			require("catppuccin").setup({
-				flavour = "mocha", -- latte, frappe, macchiato, mocha
+			local catppuccin = require("catppuccin")
+
+			catppuccin.setup({
+				flavour = "mocha",
 				transparent_background = true,
 				term_colors = true,
-				compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
+				compile = {
+					enabled = true,
+					path = vim.fn.stdpath("cache") .. "/catppuccin",
+				},
 				integrations = {
 					cmp = true,
 					gitsigns = true,
@@ -43,7 +48,6 @@ return {
 				},
 				custom_highlights = function(colors)
 					return {
-						-- LSP Inlay Hints
 						LspInlayHint = { fg = colors.overlay0, style = { "italic" } },
 						CodeiumSuggestion = { fg = colors.overlay0 },
 						OilHidden = { fg = colors.overlay0 },

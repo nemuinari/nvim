@@ -9,6 +9,20 @@ local LSP_SERVERS = {
 			["rust-analyzer"] = {
 				checkOnSave = true,
 				check = { command = "clippy" },
+				imports = {
+					granularity = {
+						group = "module",
+					},
+					prefix = "self",
+				},
+				cargo = {
+					buildScripts = {
+						enable = true,
+					},
+				},
+				procMacro = {
+					enable = true,
+				},
 				inlayHints = {
 					typeHints = { enable = true },
 				},
@@ -132,7 +146,7 @@ local function setup_windows_path()
 	local mason_bin = vim.fn.stdpath("data") .. "\\mason\\bin"
 	local current_path = vim.env.PATH or ""
 
-	-- 重複チェック
+	-- Avoid duplicate entries
 	if current_path:find(mason_bin, 1, true) then
 		return
 	end
@@ -166,8 +180,7 @@ return {
 	-- Mason.nvim
 	{
 		"williamboman/mason.nvim",
-		cmd = { "Mason", "MasonInstall", "MasonUpdate" },
-		event = "BufReadPre", -- load mason early for LSP setup
+		cmd = { "Mason", "MasonInstall", "MasonUpdate", "MasonUninstall", "MasonLog" },
 		opts = {
 			ui = { border = "rounded" },
 			PATH = "append",
@@ -181,8 +194,8 @@ return {
 	-- Mason Tool Installer
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
+		cmd = { "MasonToolsInstall", "MasonToolsUpdate", "MasonToolsClean" },
 		dependencies = { "williamboman/mason.nvim" },
-		event = "VeryLazy",
 		config = function()
 			require("mason-tool-installer").setup({
 				ensure_installed = MASON_TOOLS,
@@ -195,22 +208,35 @@ return {
 	-- LSP Configuration
 	{
 		"neovim/nvim-lspconfig",
-		event = { "BufReadPre", "BufNewFile" },
+		event = { "BufReadPost", "BufNewFile" },
 		dependencies = {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 		},
 		config = function()
+			vim.g.lspconfig_silent_deprecation = true
+
 			require("mason-lspconfig").setup({
 				ensure_installed = vim.tbl_keys(LSP_SERVERS),
 			})
 
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			local lspconfig = require("lspconfig")
+			local lsp_configs = require("lspconfig.configs")
+			local util = require("lspconfig.util")
 
 			for server_name, server_opts in pairs(LSP_SERVERS) do
 				server_opts.capabilities = capabilities
-				lspconfig[server_name].setup(server_opts)
+
+				if not server_opts.root_dir then
+					server_opts.root_dir = function(fname)
+						return util.root_pattern("Cargo.toml", ".git", "package.json", "init.lua")(fname)
+							or vim.fn.getcwd()
+					end
+				end
+
+				if lsp_configs[server_name] then
+					lsp_configs[server_name].setup(server_opts)
+				end
 			end
 
 			vim.api.nvim_create_autocmd("LspAttach", {

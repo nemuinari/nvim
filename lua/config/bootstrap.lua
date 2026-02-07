@@ -92,5 +92,5 @@ local function load_config()
 	end
 end
 
--- execute the configuration loading
+-- execute
 load_config()

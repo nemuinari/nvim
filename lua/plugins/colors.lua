@@ -6,8 +6,11 @@ return {
 	{
 		"catppuccin/nvim",
 		name = "catppuccin",
-		lazy = false,
+		event = "UIEnter",
 		priority = 1000,
+		init = function()
+			vim.g.catppuccin_flavour = "mocha"
+		end,
 		config = function()
 			local catppuccin = require("catppuccin")
 

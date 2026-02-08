@@ -13,6 +13,9 @@ local disabled_built_ins = {
 	"netrwPlugin",
 	"netrwSettings",
 	"netrwLib",
+	"netrwFileHandlers",
+	"man",
+	"osc52",
 	"gzip",
 	"zip",
 	"zipPlugin",
@@ -30,6 +33,9 @@ local disabled_built_ins = {
 for _, plugin in ipairs(disabled_built_ins) do
 	vim.g["loaded_" .. plugin] = 1
 end
+
+-- Disable editorconfig plugin if using a different solution
+vim.g.editorconfig = false
 
 -- ========================================
 -- Early UI Setup (Anti-Flash)

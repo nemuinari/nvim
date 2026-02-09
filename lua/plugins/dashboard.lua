@@ -100,7 +100,7 @@ end
 
 return {
 	"nvimdev/dashboard-nvim",
-	event = "VimEnter",
+	event = "UIEnter",
 	priority = 1000,
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	config = function()

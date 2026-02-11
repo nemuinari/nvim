@@ -9,7 +9,7 @@ return {
 			suggestion = {
 				enabled = true,
 				auto_trigger = true,
-				debounce = 75,
+				debounce = 120,
 				keymap = {
 					accept = "<Tab>",
 					accept_word = false,
@@ -20,7 +20,19 @@ return {
 				},
 			},
 			panel = {
-				enabled = false,
+				enabled = true,
+				keymap = {
+					open = "<M-/>",
+					accept = "<CR>",
+					refresh = "r",
+					next = "j",
+					prev = "k",
+				},
+			},
+			filetypes = {
+				markdown = false,
+				help = false,
+				gitcommit = false,
 			},
 		})
 	end,

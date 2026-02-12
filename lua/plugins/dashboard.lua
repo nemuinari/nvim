@@ -10,11 +10,8 @@ end
 
 -- Dashboard Center Items
 local function get_center_items()
-	-- change highlight groups here:
-	-- "Normal, String, Constant, Comment"
-	-- "DashboardCenter": original color
-
-	local my_hl = "String" -- This variable to set highlight group
+	-- change highlight groups here: "Normal, Title, String, Constant, Comment"
+	local my_hl = "Title" -- This variable to set highlight group
 
 	return {
 		{
@@ -34,6 +31,41 @@ local function get_center_items()
 			key = "f",
 			key_hl = my_hl,
 			action = "Oil --float",
+		},
+		{
+			-- Recently opened files (Telescope)
+			icon = "󰈭  ",
+			icon_hl = my_hl,
+			desc = "Recent files",
+			desc_hl = my_hl,
+			key = "r",
+			key_hl = my_hl,
+			action = function()
+				require("lazy").load({ plugins = { "telescope.nvim" } })
+				require("telescope.builtin").oldfiles({
+					attach_mappings = function(prompt_bufnr)
+						local actions = require("telescope.actions")
+						local action_state = require("telescope.actions.state")
+						actions.select_default:replace(function()
+							actions.close(prompt_bufnr)
+							local selection = action_state.get_selected_entry()
+							if not selection then
+								return
+							end
+							local path = selection.path or selection.filename or selection[1]
+							if not path then
+								return
+							end
+							vim.cmd("edit " .. vim.fn.fnameescape(path))
+							vim.cmd("filetype detect")
+							vim.cmd("syntax enable")
+							vim.cmd("doautocmd BufReadPost")
+							vim.cmd("doautocmd FileType")
+						end)
+						return true
+					end,
+				})
+			end,
 		},
 		{
 			icon = "󰒲  ",

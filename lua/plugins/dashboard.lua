@@ -1,66 +1,62 @@
 -- ========================================
 -- Dashboard Configuration
 -- ========================================
-
 local M = {}
 
--- ========================================
 -- Dashboard Header
--- ========================================
-
 local function get_header()
 	return require("config.dashboard_header")
 end
 
--- ========================================
 -- Dashboard Center Items
--- ========================================
-
 local function get_center_items()
+	-- change highlight groups here:
+	-- "Normal, String, Constant, Comment"
+	-- "DashboardCenter": original color
+
+	local my_hl = "String" -- This variable to set highlight group
+
 	return {
 		{
 			icon = "󰈔  ",
-			icon_hl = "Title",
+			icon_hl = my_hl,
 			desc = "New file",
-			desc_hl = "String",
+			desc_hl = my_hl,
 			key = "n",
-			key_hl = "Number",
+			key_hl = my_hl,
 			action = "enew",
 		},
 		{
 			icon = "󰈞  ",
-			icon_hl = "Title",
+			icon_hl = my_hl,
 			desc = "Find file",
-			desc_hl = "String",
+			desc_hl = my_hl,
 			key = "f",
-			key_hl = "Number",
+			key_hl = my_hl,
 			action = "Oil --float",
 		},
 		{
 			icon = "󰒲  ",
-			icon_hl = "Title",
+			icon_hl = my_hl,
 			desc = "Lazy manager",
-			desc_hl = "String",
+			desc_hl = my_hl,
 			key = "l",
-			key_hl = "Number",
+			key_hl = my_hl,
 			action = "Lazy",
 		},
 		{
 			icon = "󰗼  ",
-			icon_hl = "Title",
+			icon_hl = my_hl,
 			desc = "Quit",
-			desc_hl = "String",
+			desc_hl = my_hl,
 			key = "q",
-			key_hl = "Number",
+			key_hl = my_hl,
 			action = "quit",
 		},
 	}
 end
 
--- ========================================
 -- Dashboard Footer
--- ========================================
-
 local function get_footer()
 	local stats = require("lazy").stats()
 	local ms = math.floor(stats.startuptime * 100 + 0.5) / 100
@@ -74,10 +70,7 @@ local function get_footer()
 	}
 end
 
--- ========================================
 -- Dashboard Setup
--- ========================================
-
 local function get_dashboard_config()
 	return {
 		theme = "doom",
@@ -94,10 +87,7 @@ local function get_dashboard_config()
 	}
 end
 
--- ========================================
 -- Plugin Specification
--- ========================================
-
 return {
 	"nvimdev/dashboard-nvim",
 	event = "UIEnter",

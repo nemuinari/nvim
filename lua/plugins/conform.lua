@@ -57,7 +57,7 @@ return {
 		end,
 
 		-- ----------------------------------------
-		-- formatter specific optionsk
+		-- formatter specific options
 		-- ----------------------------------------
 		formatters = {
 			shfmt = {

@@ -6,7 +6,7 @@ return {
 	{
 		"catppuccin/nvim",
 		name = "catppuccin",
-		event = "VeryLazy",
+		event = "UIEnter",
 		priority = 1000,
 		init = function()
 			vim.g.catppuccin_flavour = "mocha"
@@ -19,7 +19,7 @@ return {
 				transparent_background = true,
 				term_colors = true,
 				compile = {
-					enabled = false,
+					enabled = true,
 					path = vim.fn.stdpath("cache") .. "/catppuccin",
 				},
 				integrations = {
@@ -70,11 +70,11 @@ return {
 	-- Statusline: Lualine
 	{
 		"nvim-lualine/lualine.nvim",
-		dependencies = { "catppuccin/nvim", "nvim-tree/nvim-web-devicons" },
+		dependencies = { "nvim-tree/nvim-web-devicons" },
 		event = "VeryLazy",
 		opts = {
 			options = {
-				theme = "catppuccin",
+				theme = "auto",
 				component_separators = { left = "│", right = "│" },
 				section_separators = { left = "", right = "" }, -- fancy separators
 				disabled_filetypes = {

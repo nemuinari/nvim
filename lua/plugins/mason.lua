@@ -47,6 +47,24 @@ local LSP_SERVERS = {
 	},
 }
 
+local function build_lsp_filetypes()
+	local filetypes = {}
+	local seen = {}
+	for _, server in pairs(LSP_SERVERS) do
+		if type(server.filetypes) == "table" then
+			for _, ft in ipairs(server.filetypes) do
+				if not seen[ft] then
+					seen[ft] = true
+					table.insert(filetypes, ft)
+				end
+			end
+		end
+	end
+	return filetypes
+end
+
+local LSP_FILETYPES = build_lsp_filetypes()
+
 -- ========================================
 -- Mason Tools Configuration
 -- ========================================
@@ -150,7 +168,7 @@ return {
 	-- LSP Configuration
 	{
 		"neovim/nvim-lspconfig",
-		event = "FileType",
+		ft = LSP_FILETYPES,
 		dependencies = {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",

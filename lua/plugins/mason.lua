@@ -15,7 +15,8 @@ local LSP_SERVERS = {
 		filetypes = { "rust" },
 		settings = {
 			["rust-analyzer"] = {
-				checkOnSave = { command = "clippy" },
+				checkOnSave = true,
+				check = { command = "clippy" },
 				imports = {
 					granularity = { group = "module" },
 					prefix = "self",

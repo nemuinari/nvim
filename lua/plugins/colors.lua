@@ -23,12 +23,9 @@ return {
 					path = vim.fn.stdpath("cache") .. "/catppuccin",
 				},
 				integrations = {
-					cmp = true,
-					gitsigns = true,
-					treesitter = true,
-					notify = true,
-					dashboard = true,
-					lsp_trouble = true,
+				gitsigns = true,
+				treesitter = true,
+				dashboard = true,
 					mason = true,
 					native_lsp = {
 						enabled = true,

@@ -112,17 +112,12 @@ end
 -- ========================================
 
 local function setup_diagnostics()
-	-- Define signs efficiently
-	local signs = {
-		{ name = "DiagnosticSignError", text = "󰅚 " },
-		{ name = "DiagnosticSignWarn", text = "󰀪 " },
-		{ name = "DiagnosticSignHint", text = "󰌶 " },
-		{ name = "DiagnosticSignInfo", text = "󰋽 " },
+	local sign_text = {
+		[vim.diagnostic.severity.ERROR] = "󰅚 ",
+		[vim.diagnostic.severity.WARN] = "󰀪 ",
+		[vim.diagnostic.severity.HINT] = "󰌶 ",
+		[vim.diagnostic.severity.INFO] = "󰋽 ",
 	}
-
-	for _, sign in ipairs(signs) do
-		vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
-	end
 
 	vim.diagnostic.config({
 		-- Enable/Disable features
@@ -131,9 +126,7 @@ local function setup_diagnostics()
 			spacing = 4,
 			severity = { min = vim.diagnostic.severity.WARN }, -- Don't show virtual text for Info/Hint
 		},
-		signs = {
-			active = signs, -- Use the signs defined above
-		},
+		signs = { text = sign_text },
 		float = {
 			focused = false,
 			style = "minimal",

@@ -1,63 +1,35 @@
 -- ========================================
--- Colorscheme & UI Configuration (Catppuccin)
+-- Colorscheme & UI Configuration (Kanagawa)
 -- ========================================
 return {
-	-- Colorscheme: Catppuccin
+	-- Colorscheme: Kanagawa
 	{
-		"catppuccin/nvim",
-		name = "catppuccin",
+		"rebelot/kanagawa.nvim",
 		event = "UIEnter",
 		priority = 1000,
-		init = function()
-			vim.g.catppuccin_flavour = "mocha"
-		end,
 		config = function()
-			local catppuccin = require("catppuccin")
-
-			catppuccin.setup({
-				flavour = "mocha",
-				transparent_background = true,
-				term_colors = true,
-				compile = {
-					enabled = true,
-					path = vim.fn.stdpath("cache") .. "/catppuccin",
-				},
-				integrations = {
-				gitsigns = true,
-				treesitter = true,
-				dashboard = true,
-					mason = true,
-					native_lsp = {
-						enabled = true,
-						virtual_text = {
-							errors = { "italic" },
-							hints = { "italic" },
-							warnings = { "italic" },
-							information = { "italic" },
-						},
-						underlines = {
-							errors = { "undercurl" },
-							warnings = { "underline" },
-							hints = { "underdot" },
-							information = { "underdot" },
-						},
-						inlay_hints = {
-							background = true,
-						},
-					},
-				},
-				custom_highlights = function(colors)
-					return {
-						LspInlayHint = { fg = colors.overlay0, style = { "italic" } },
-						CodeiumSuggestion = { fg = colors.overlay0 },
-						OilHidden = { fg = colors.overlay0 },
-						EndOfBuffer = { fg = colors.base },
-					}
-				end,
+			require("kanagawa").setup({
+				transparent = true,
+				theme = "wave",
 			})
 
 			-- choose colorscheme
-			vim.cmd.colorscheme("catppuccin")
+			vim.cmd.colorscheme("kanagawa")
+
+			-- Make gutter background transparent (line numbers, signs, folds)
+			vim.api.nvim_set_hl(0, "LineNr", { bg = "none" })
+			vim.api.nvim_set_hl(0, "LineNrAbove", { bg = "none" })
+			vim.api.nvim_set_hl(0, "LineNrBelow", { bg = "none" })
+			vim.api.nvim_set_hl(0, "CursorLineNr", { bg = "none" })
+			vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
+			vim.api.nvim_set_hl(0, "FoldColumn", { bg = "none" })
+			vim.api.nvim_set_hl(0, "GitSignsAdd", { bg = "none" })
+			vim.api.nvim_set_hl(0, "GitSignsChange", { bg = "none" })
+			vim.api.nvim_set_hl(0, "GitSignsDelete", { bg = "none" })
+			vim.api.nvim_set_hl(0, "DiagnosticSignError", { bg = "none" })
+			vim.api.nvim_set_hl(0, "DiagnosticSignWarn", { bg = "none" })
+			vim.api.nvim_set_hl(0, "DiagnosticSignInfo", { bg = "none" })
+			vim.api.nvim_set_hl(0, "DiagnosticSignHint", { bg = "none" })
 
 			-- Remove ~ from the end of the buffer
 			vim.opt.fillchars:append({ eob = " " })

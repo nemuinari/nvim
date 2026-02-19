@@ -11,7 +11,7 @@ end
 -- Dashboard Center Items
 local function get_center_items()
 	-- change highlight groups here: "Normal, Title, String, Constant, Comment"
-	local my_hl = "Title" -- This variable to set highlight group
+	local my_hl = "Comment" -- This variable to set highlight group
 
 	return {
 		{

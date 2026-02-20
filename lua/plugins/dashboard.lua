@@ -8,6 +8,34 @@ local function get_header()
 	return require("config.dashboard_header")
 end
 
+-- Recent files action for Telescope
+local function open_recent_files()
+	require("lazy").load({ plugins = { "telescope.nvim" } })
+	require("telescope.builtin").oldfiles({
+		attach_mappings = function(prompt_bufnr)
+			local actions = require("telescope.actions")
+			local action_state = require("telescope.actions.state")
+			actions.select_default:replace(function()
+				actions.close(prompt_bufnr)
+				local selection = action_state.get_selected_entry()
+				if not selection then
+					return
+				end
+				local path = selection.path or selection.filename or selection[1]
+				if not path then
+					return
+				end
+				vim.cmd("edit " .. vim.fn.fnameescape(path))
+				vim.cmd("filetype detect")
+				vim.cmd("syntax enable")
+				vim.cmd("doautocmd BufReadPost")
+				vim.cmd("doautocmd FileType")
+			end)
+			return true
+		end,
+	})
+end
+
 -- Dashboard Center Items
 local function get_center_items()
 	-- change highlight groups here: "Normal, Title, String, Constant, Comment"
@@ -40,32 +68,7 @@ local function get_center_items()
 			desc_hl = my_hl,
 			key = "r",
 			key_hl = my_hl,
-			action = function()
-				require("lazy").load({ plugins = { "telescope.nvim" } })
-				require("telescope.builtin").oldfiles({
-					attach_mappings = function(prompt_bufnr)
-						local actions = require("telescope.actions")
-						local action_state = require("telescope.actions.state")
-						actions.select_default:replace(function()
-							actions.close(prompt_bufnr)
-							local selection = action_state.get_selected_entry()
-							if not selection then
-								return
-							end
-							local path = selection.path or selection.filename or selection[1]
-							if not path then
-								return
-							end
-							vim.cmd("edit " .. vim.fn.fnameescape(path))
-							vim.cmd("filetype detect")
-							vim.cmd("syntax enable")
-							vim.cmd("doautocmd BufReadPost")
-							vim.cmd("doautocmd FileType")
-						end)
-						return true
-					end,
-				})
-			end,
+			action = open_recent_files,
 		},
 		{
 			icon = "󰒲  ",

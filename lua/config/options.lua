@@ -101,8 +101,9 @@ local function setup_editor()
 	vim.opt_global.undofile = true
 
 	-- General Editor Settings
-	vim.opt.updatetime = 250
-	vim.opt.timeoutlen = 300
+	vim.opt.updatetime = 250 -- Faster completion & CursorHold events
+	vim.opt.timeout = true -- Enable timeout for mapped sequences
+	vim.opt.timeoutlen = 1000 -- Time to wait for a mapped sequence to complete
 	vim.opt.clipboard = "unnamedplus" -- Sync with system clipboard
 	vim.opt.virtualedit = "block" -- Allow cursor to move where there is no text in Visual Block mode
 end

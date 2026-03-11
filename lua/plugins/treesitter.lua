@@ -7,9 +7,9 @@
 -- ========================================
 
 local ENSURE_INSTALLED_LANGUAGES = {
-	"lua",
-	"vim",
-	"vimdoc",
+    "lua",
+    "vim",
+    "vimdoc",
 }
 
 -- ========================================
@@ -17,16 +17,16 @@ local ENSURE_INSTALLED_LANGUAGES = {
 -- ========================================
 
 local function get_treesitter_config()
-	return {
-		highlight = {
-			enable = true,
-		},
-		indent = {
-			enable = true,
-		},
-		ensure_installed = ENSURE_INSTALLED_LANGUAGES,
-		auto_install = true,
-	}
+    return {
+        highlight = {
+            enable = true,
+        },
+        indent = {
+            enable = true,
+        },
+        ensure_installed = ENSURE_INSTALLED_LANGUAGES,
+        auto_install = true,
+    }
 end
 
 -- ========================================
@@ -34,15 +34,15 @@ end
 -- ========================================
 
 return {
-	"nvim-treesitter/nvim-treesitter",
-	build = ":TSUpdate",
-	event = "BufReadPost",
-	priority = 800,
-	config = function()
-		local ok, configs = pcall(require, "nvim-treesitter.configs")
-		if not ok then
-			return
-		end
-		configs.setup(get_treesitter_config())
-	end,
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    event = "BufReadPost",
+    priority = 800,
+    config = function()
+        local ok, configs = pcall(require, "nvim-treesitter.configs")
+        if not ok then
+            return
+        end
+        configs.setup(get_treesitter_config())
+    end,
 }

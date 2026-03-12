@@ -10,6 +10,9 @@ local ENSURE_INSTALLED_LANGUAGES = {
     "lua",
     "vim",
     "vimdoc",
+    "rust",
+    "css",
+    "html",
 }
 
 -- ========================================

@@ -9,6 +9,7 @@ local INDENTS = {
     rust = 4,
     python = 4,
     lua = 4,
+    ron = 4,
     javascript = 2,
     typescript = 2,
     json = 2,

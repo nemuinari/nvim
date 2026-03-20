@@ -14,7 +14,8 @@ return {
         formatters_by_ft = {
             -- Lua / Rust / Python
             lua = { "stylua" },
-            rust = { "leptosfmt", "rustfmt" },
+            rust = { "rustfmt", "leptosfmt", "dx_fmt" },
+            ron = { "taplo" },
             python = { "isort", "black" },
 
             -- JavaScript / TypeScript
@@ -64,6 +65,11 @@ return {
                 condition = function(self, ctx)
                     return vim.fn.executable("leptosfmt") == 1
                 end,
+            },
+            dx_fmt = {
+                command = "dx",
+                args = { "fmt", "-f", "$FILENAME" },
+                stdin = false,
             },
             shfmt = {
                 prepend_args = { "-i", "2" },

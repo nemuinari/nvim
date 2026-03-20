@@ -13,6 +13,9 @@ local ENSURE_INSTALLED_LANGUAGES = {
     "rust",
     "css",
     "html",
+    "ron",
+    "markdown",
+    "markdown_inline",
 }
 
 -- ========================================

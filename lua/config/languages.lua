@@ -18,6 +18,12 @@ local INDENTS = {
 }
 
 function M.setup()
+    -- filetype 検出
+    vim.filetype.add({
+        extension = { ron = "ron" },
+    })
+    pcall(vim.treesitter.language.register, "rust", "ron")
+
     local group = vim.api.nvim_create_augroup("LangIndent", { clear = true })
     vim.api.nvim_create_autocmd("FileType", {
         group = group,

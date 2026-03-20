@@ -49,5 +49,14 @@ return {
             return
         end
         configs.setup(get_treesitter_config())
+
+        pcall(vim.treesitter.language.register, "rust", "ron")
+
+        vim.api.nvim_create_autocmd("BufReadPost", {
+            pattern = "*.ron",
+            callback = function(args)
+                pcall(vim.treesitter.start, args.buf, "rust")
+            end,
+        })
     end,
 }

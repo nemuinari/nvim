@@ -38,6 +38,19 @@ local function get_telescope_config()
                     end,
                 },
             },
+            -- プレビュー時に treesitter ハイライトを適用
+            preview = {
+                treesitter = true,
+                filetype_hook = function(filepath, bufnr, opts)
+                    local ext = filepath:match("%.([^%.]+)$")
+                    if ext == "ron" then
+                        vim.schedule(function()
+                            pcall(vim.treesitter.start, bufnr, "rust")
+                        end)
+                    end
+                    return true
+                end,
+            },
         },
     }
 end

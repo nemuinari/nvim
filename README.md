@@ -1,4 +1,4 @@
-# Neovim Configuration (2026.02)
+# Neovim Configuration (2026.03)
 
 ## keymaps
 
@@ -80,8 +80,8 @@
 
 ## LSP / Tools
 
-- LSP servers: clangd, pyright, rust-analyzer, lua_ls
-- Mason tools: stylua, prettier, black, isort, rustfmt, clang-format, shfmt, taplo
+- LSP servers: clangd, pyright, rust-analyzer, lua_ls, html, cssls, emmet_ls
+- Mason tools: stylua, prettier, black, isort, rustfmt, clang-format, shfmt, taplo, stylelint
 - Inlay hints: Neovim 0.10+ で自動有効
 
 ---

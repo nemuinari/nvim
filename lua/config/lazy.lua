@@ -1,5 +1,5 @@
 require("lazy").setup({
-    spec = { require("plugins") },
+    spec = { { import = "plugins" } },
     change_detection = { notify = false },
     performance = {
         cache = { enabled = true },

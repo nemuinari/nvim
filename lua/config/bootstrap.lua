@@ -7,7 +7,10 @@ if vim.loader then
     vim.loader.enable()
 end
 
--- Disable unused built-in plugins to improve startup time
+-- Disable unused built-in plugins to improve startup time.
+-- Note: some entries overlap with lazy.lua's rtp.disabled_plugins — this is intentional.
+-- These g:loaded_* vars must be set BEFORE lazy.nvim loads to prevent Vim from sourcing
+-- the plugins during startup. lazy's rtp list prevents re-enabling after reset_packpath.
 local disabled_built_ins = {
     "netrw",
     "netrwPlugin",

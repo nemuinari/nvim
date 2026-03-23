@@ -89,8 +89,4 @@ function M.shell()
 	}
 end
 
-function M.clang_style(fallback)
-	return (M.info.is_windows or M.info.is_wsl) and fallback or "file"
-end
-
 return M

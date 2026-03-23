@@ -18,25 +18,6 @@ local INDENTS = {
 }
 
 function M.setup()
-    -- filetype 検出
-    vim.filetype.add({
-        extension = { ron = "ron" },
-    })
-
-    vim.api.nvim_create_autocmd({ "BufReadPost", "BufEnter", "BufWinEnter" }, {
-        pattern = "*.ron",
-        callback = function(args)
-            vim.schedule(function()
-                vim.schedule(function()
-                    if vim.treesitter.highlighter.active[args.buf] then
-                        return
-                    end
-                    pcall(vim.treesitter.start, args.buf, "rust")
-                end)
-            end)
-        end,
-    })
-
     local group = vim.api.nvim_create_augroup("LangIndent", { clear = true })
     vim.api.nvim_create_autocmd("FileType", {
         group = group,

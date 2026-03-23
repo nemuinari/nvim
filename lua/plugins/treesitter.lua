@@ -50,12 +50,18 @@ return {
         end
         configs.setup(get_treesitter_config())
 
+        -- Ron: use Rust parser for highlighting
+        vim.filetype.add({ extension = { ron = "ron" } })
         pcall(vim.treesitter.language.register, "rust", "ron")
 
         vim.api.nvim_create_autocmd("BufReadPost", {
             pattern = "*.ron",
             callback = function(args)
-                pcall(vim.treesitter.start, args.buf, "rust")
+                vim.schedule(function()
+                    if not vim.treesitter.highlighter.active[args.buf] then
+                        pcall(vim.treesitter.start, args.buf, "rust")
+                    end
+                end)
             end,
         })
     end,

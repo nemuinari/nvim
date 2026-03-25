@@ -43,26 +43,25 @@ return {
     build = ":TSUpdate",
     event = "BufReadPost",
     priority = 800,
+    init = function()
+        -- Register early (before lazy load) so filetype detection and treesitter both work
+        vim.filetype.add({ extension = { ron = "ron" } })
+        pcall(vim.treesitter.language.register, "rust", "ron")
+        -- BufWinEnter fires after BufReadPost (after nvim-treesitter processes the buffer)
+        vim.api.nvim_create_autocmd("BufWinEnter", {
+            pattern = "*.ron",
+            callback = function(args)
+                if not vim.treesitter.highlighter.active[args.buf] then
+                    pcall(vim.treesitter.start, args.buf, "rust")
+                end
+            end,
+        })
+    end,
     config = function()
         local ok, configs = pcall(require, "nvim-treesitter.configs")
         if not ok then
             return
         end
         configs.setup(get_treesitter_config())
-
-        -- Ron: use Rust parser for highlighting
-        vim.filetype.add({ extension = { ron = "ron" } })
-        pcall(vim.treesitter.language.register, "rust", "ron")
-
-        vim.api.nvim_create_autocmd("BufReadPost", {
-            pattern = "*.ron",
-            callback = function(args)
-                vim.schedule(function()
-                    if not vim.treesitter.highlighter.active[args.buf] then
-                        pcall(vim.treesitter.start, args.buf, "rust")
-                    end
-                end)
-            end,
-        })
     end,
 }

@@ -47,13 +47,28 @@ return {
         -- Register early (before lazy load) so filetype detection and treesitter both work
         vim.filetype.add({ extension = { ron = "ron" } })
         pcall(vim.treesitter.language.register, "rust", "ron")
-        -- BufWinEnter fires after BufReadPost (after nvim-treesitter processes the buffer)
-        vim.api.nvim_create_autocmd("BufWinEnter", {
-            pattern = "*.ron",
+
+        -- FileType で確実にハイライト＋インデントを有効化する
+        -- (BufWinEnter より FileType の方がタイミングが安定している)
+        vim.api.nvim_create_autocmd("FileType", {
+            pattern = "ron",
             callback = function(args)
-                if not vim.treesitter.highlighter.active[args.buf] then
-                    pcall(vim.treesitter.start, args.buf, "rust")
+                local buf = args.buf
+
+                -- Treesitter ハイライトを起動 (未起動の場合のみ)
+                if not vim.treesitter.highlighter.active[buf] then
+                    pcall(vim.treesitter.start, buf, "rust")
                 end
+
+                -- nvim-treesitter のインデント関数を明示的に設定
+                -- これにより <CR> での改行インデントと = での整形が機能する
+                vim.schedule(function()
+                    if vim.api.nvim_buf_is_valid(buf) then
+                        vim.bo[buf].indentexpr = "nvim_treesitter#indent()"
+                        -- smartindent は treesitter indent と競合するため無効化
+                        vim.bo[buf].smartindent = false
+                    end
+                end)
             end,
         })
     end,

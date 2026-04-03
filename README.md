@@ -1,4 +1,4 @@
-# Neovim Configuration (2026.03)
+# Neovim Configuration (2026.04)
 
 ## keymaps
 
@@ -33,13 +33,13 @@
 
 ### Dashboard
 
-| Key | Action         |
-| :-- | :------------- |
-| `n` | New file       |
-| `f` | Oil (Floating) |
-| `r` | Recent files   |
-| `l` | Lazy Manager   |
-| `q` | Quit           |
+| Key | Action       |
+| :-- | :----------- |
+| `n` | New file     |
+| `f` | Find file    |
+| `r` | Recent files |
+| `l` | Lazy Manager |
+| `q` | Quit         |
 
 ### パスコピー
 
@@ -51,15 +51,24 @@
 
 ### 補完 (nvim-cmp)
 
-| Key         | Action             |
-| :---------- | :----------------- |
-| `<Tab>`     | 次の補完候補       |
-| `<S-Tab>`   | 前の補完候補       |
-| `<CR>`      | 補完確定           |
-| `<C-Space>` | 補完を手動で開く   |
-| `<C-e>`     | 補完を閉じる       |
-| `<C-d>`     | ドキュメントを下へ |
-| `<C-u>`     | ドキュメントを上へ |
+| Key         | Action                       |
+| :---------- | :--------------------------- |
+| `<C-n>`     | 次の補完候補                 |
+| `<C-p>`     | 前の補完候補                 |
+| `<Tab>`     | 補完確定 / スニペット展開    |
+| `<S-Tab>`   | スニペット戻る               |
+| `<CR>`      | 補完確定（候補を選択しない） |
+| `<C-Space>` | 補完を手動で開く             |
+| `<C-e>`     | 補完を閉じる                 |
+| `<C-d>`     | ドキュメントを下へ           |
+| `<C-u>`     | ドキュメントを上へ           |
+
+### Markdown
+
+| Key          | Action                      |
+| :----------- | :-------------------------- |
+| `<leader>mr` | Markdown Render トグル      |
+| `<leader>mp` | Markdown Preview (ブラウザ) |
 
 ### Copilot
 

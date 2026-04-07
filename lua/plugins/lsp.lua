@@ -2,6 +2,16 @@
 -- LSP Configuration
 -- ========================================
 
+-- ========================================
+-- Optional LSP Servers (mason 管理外 / 手動インストール)
+-- ========================================
+local OPTIONAL_LSP_SERVERS = {
+    ron_ls = {
+        cmd = { "ron-lsp" },
+        filetypes = { "ron" },
+    },
+}
+
 local LSP_SERVERS = {
     clangd = {
         cmd = { "clangd" },
@@ -73,7 +83,8 @@ local LSP_SERVERS = {
 local function build_lsp_filetypes()
     local filetypes = {}
     local seen = {}
-    for _, server in pairs(LSP_SERVERS) do
+    local all_servers = vim.tbl_extend("force", {}, LSP_SERVERS, OPTIONAL_LSP_SERVERS)
+    for _, server in pairs(all_servers) do
         if type(server.filetypes) == "table" then
             for _, ft in ipairs(server.filetypes) do
                 if not seen[ft] then
@@ -206,6 +217,41 @@ return {
                 end
             else
                 require("lspconfig")[server_name].setup(server_opts)
+            end
+        end
+
+        -- ----------------------------------------
+        -- Optional LSP servers (binary が存在する場合のみ起動)
+        -- ----------------------------------------
+        for server_name, server_opts in pairs(OPTIONAL_LSP_SERVERS) do
+            if vim.fn.executable(server_opts.cmd[1]) == 1 then
+                server_opts.capabilities = capabilities
+                server_opts.name = server_name
+
+                if not server_opts.root_dir then
+                    server_opts.root_dir = function(fname)
+                        return util.root_pattern("Cargo.toml", ".git")(fname)
+                            or vim.fn.getcwd()
+                    end
+                end
+
+                if is_nvim_0_11 then
+                    autostart_group = autostart_group
+                        or vim.api.nvim_create_augroup("UserLspAutoStart", { clear = true })
+
+                    vim.lsp.config(server_name, server_opts)
+
+                    vim.api.nvim_create_autocmd("FileType", {
+                        group = autostart_group,
+                        pattern = server_opts.filetypes,
+                        callback = function(args)
+                            start_lsp_for_buf(server_name, server_opts, args.buf)
+                        end,
+                        desc = "Start optional LSP for " .. server_name,
+                    })
+                else
+                    require("lspconfig")[server_name].setup(server_opts)
+                end
             end
         end
 

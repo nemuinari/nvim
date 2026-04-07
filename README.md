@@ -117,9 +117,42 @@
 
 ## LSP / Tools
 
-- LSP servers: clangd, pyright, rust-analyzer, lua_ls, html, cssls, emmet_ls
-- Mason tools: stylua, prettier, black, isort, rustfmt, clang-format, shfmt, taplo, stylelint
+### Mason 管理 LSP
+
+| Server        | 対象言語                  |
+| :------------ | :------------------------ |
+| clangd        | C / C++                   |
+| pyright       | Python                    |
+| rust-analyzer | Rust                      |
+| lua_ls        | Lua                       |
+| html          | HTML / JSX / TSX          |
+| cssls         | CSS / SCSS / Less         |
+| emmet_ls      | HTML / CSS / Rust (Emmet) |
+
+### オプション LSP（手動インストール）
+
+| Server  | 対象言語 | インストール            |
+| :------ | :------- | :---------------------- |
+| ron-lsp | RON      | `cargo install ron-lsp` |
+
+> バイナリが存在する場合のみ自動起動します。インストールしていない環境では何も起きません。
+
+### Formatter (conform.nvim)
+
+| Filetype                      | Formatter                    |
+| :---------------------------- | :--------------------------- |
+| lua                           | stylua                       |
+| rust                          | rustfmt → leptosfmt → dx_fmt |
+| ron                           | ron-lsp (LSP fallback)       |
+| python                        | isort → black                |
+| js / ts / jsx / tsx           | prettier                     |
+| html / css / json / yaml / md | prettier                     |
+| c / c++                       | clang-format                 |
+| sh                            | shfmt                        |
+| toml                          | taplo                        |
+
 - Inlay hints: Neovim 0.10+ で自動有効
+- 保存時に自動フォーマット（`node_modules/` 内は除外）
 
 ---
 
@@ -128,4 +161,9 @@
 ```powershell
 # Windows (PowerShell)
 winget install BurntSushi.ripgrep.MSVC
+```
+
+```bash
+# RON ファイルのフォーマット（オプション）
+cargo install ron-lsp
 ```

@@ -45,7 +45,7 @@ local function setup_display()
     vim.opt.relativenumber = true
     vim.opt.cursorline = true
     vim.opt.signcolumn = "yes"
-    vim.opt.laststatus = 3 -- Global statusline
+    vim.opt.laststatus = 3   -- Global statusline
     vim.opt.showmode = false -- Don't show mode in command line (lualine handles it)
 
     -- Window splitting behavior
@@ -78,7 +78,7 @@ end
 
 local function setup_search()
     vim.opt.ignorecase = true -- Case insensitive searching
-    vim.opt.smartcase = true -- Case sensitive if uppercase present
+    vim.opt.smartcase = true  -- Case sensitive if uppercase present
     vim.opt.hlsearch = true
 
     -- Clear search highlight with <Esc><Esc>
@@ -101,11 +101,11 @@ local function setup_editor()
     vim.opt_global.undofile = true
 
     -- General Editor Settings
-    vim.opt.updatetime = 250       -- Faster completion & CursorHold events
-    vim.opt.timeout = true         -- Enable timeout for mapped sequences
-    vim.opt.timeoutlen = 1000      -- Time to wait for a mapped sequence to complete
+    vim.opt.updatetime = 250          -- Faster completion & CursorHold events
+    vim.opt.timeout = true            -- Enable timeout for mapped sequences
+    vim.opt.timeoutlen = 1000         -- Time to wait for a mapped sequence to complete
     vim.opt.clipboard = "unnamedplus" -- Sync with system clipboard
-    vim.opt.virtualedit = "block"  -- Allow cursor to move where there is no text in Visual Block mode
+    vim.opt.virtualedit = "block"     -- Allow cursor to move where there is no text in Visual Block mode
 end
 
 -- ========================================

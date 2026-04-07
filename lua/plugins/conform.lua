@@ -15,7 +15,7 @@ return {
             -- Lua / Rust / Python
             lua = { "stylua" },
             rust = { "rustfmt", "leptosfmt", "dx_fmt" },
-            -- ron: 専用フォーマッターなし。LSP fallback (rust-analyzer) に委ねる
+            ron = {},
             python = { "isort", "black" },
 
             -- JavaScript / TypeScript

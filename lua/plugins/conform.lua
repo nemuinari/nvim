@@ -76,4 +76,40 @@ return {
             },
         },
     },
+
+    -- opts のみだと lazy.nvim が自動で setup() を呼ぶが、
+    -- config を明示することで setup() 後に追加処理を挟める
+    config = function(_, opts)
+        require("conform").setup(opts)
+
+        -- ----------------------------------------
+        -- RON: ron-lsp のコメント末尾カンマ挿入バグの修正
+        --
+        -- ron-lsp (lsp_fallback) はフォーマット時に
+        -- コメント行 (// ...) の末尾に , を挿入するバグがある。
+        -- conform の BufWritePre ハンドラが setup() 内で登録されるため、
+        -- ここで登録する autocmd は必ず conform の LSP フォーマット完了後に実行される。
+        -- ----------------------------------------
+        vim.api.nvim_create_autocmd("BufWritePre", {
+            pattern = "*.ron",
+            desc = "Remove trailing commas inserted by ron-lsp into comment lines",
+            callback = function(args)
+                local lines = vim.api.nvim_buf_get_lines(args.buf, 0, -1, false)
+                local changed = false
+                for i, line in ipairs(lines) do
+                    -- コメント行 (先頭が空白 + //) の末尾にある , を除去
+                    -- 例: "    // foo,"  →  "    // foo"
+                    --     "// bar,,"    →  "// bar,"  (二重カンマも一段階ずつ修正される)
+                    local fixed = line:gsub("^(%s*//.-),%s*$", "%1")
+                    if fixed ~= line then
+                        lines[i] = fixed
+                        changed = true
+                    end
+                end
+                if changed then
+                    vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, lines)
+                end
+            end,
+        })
+    end,
 }
